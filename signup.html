@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLC LibSys</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inspiration&family=M+PLUS+1p&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Pontano+Sans:wght@300&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <div id="page">
+        <div class="inactive_section" id="login_section">
+            <img id="logo" src="imgs/logo.png" alt="">
+            <h1>TLC Library</h1>
+
+            <p>Already have an account? Login now</p>
+            <a href="login.html"><button>Login</button></a>
+        </div>
+
+        <div class="active_section" id="signup_section">
+            <h1>Sign Up</h1><hr>
+            <p>Please provide your information to sign up.</p>
+            
+            <div class="input_container flex">
+                <div>
+                    <input type="text" name="" id="" placeholder="First Name">
+                    <input type="text" placeholder="Middle Name">
+                    <input type="text" name="" id="" placeholder="Last Name">
+                    <input type="password" name="" id="" placeholder="Password">
+                </div>
+                <div>
+                    <input type="number" placeholder="Contact">
+                    <input type="email" name="" id="" placeholder="School Email">
+                    <select name="course" id="course">
+                        <option value="">Course</option>
+                        <option value="BSIT">BSIT</option>
+                        <option value="BEED">BEED</option>
+                        <option value="ACT">ACT</option>
+                        <option value="BSBA">BSBA</option>
+                    </select>
+                    <select name="year_level" id="year_level">
+                        <option value="">Year Level</option>
+                        <option value="">1</option>
+                        <option value="">2</option>
+                        <option value="">3</option>
+                        <option value="">4</option>
+                    </select>
+                </div>
+            </div>
+            <button>Sign Up</button>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLC LibSys</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inspiration&family=M+PLUS+1p&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Pontano+Sans:wght@300&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="gen.css">
+</head>
+<body>
+    <header>
+        <h3>TLC LibSys</h3>
+        <nav>        
+            <a href="dashboard.html">Dashboard</a>
+            <a href="collection.html">Collection</a>
+            <a href="borrowers.html">Borrowers</a>
+            <a href="manage_books.html">Manage Books</a>
+        </nav>
+    </header>
+
+   <div>
+        <div id="add_new_book">
+            <div class="overlay"></div>
+            <div class="add_form">
+                <div class="modal-header">
+                    <h2><ion-icon name="add"></ion-icon>Add New Book</h2>
+                    <span class="close">&times;</span>
+                </div>
+
+                <form method="POST" >
+                    <div class="form">
+                        <input type="hidden" name="action" value="create">
+                        <input type="text" name="title" id="add-title" placeholder="Title" required>
+                        <input type="text" name="author" id="add-author" placeholder="Author" required>
+                        <div>
+                            <input type="number" name="year" id="add-year" placeholder="Year" required>
+                            <!-- <span class="error-message" id="add-year-error">Year must be 4 digits</span> -->
+                        </div>
+                        <select name="category" id="add-category" required style="color: grey; width:100%;">
+                            <option value="" disabled selected>Select a category</option>
+                            <option value="Generalities">Generalities</option>
+                            <option value="Fiction">Fiction</option>
+                            <option value="Non-Fiction">Non-Fiction</option>
+                            <option value="Philosophy & Psychology">Philosophy & Psychology</option>
+                            <option value="Religion">Religion</option>
+                            <option value="Social Sciences">Social Sciences</option>
+                            <option value="Language">Language</option>
+                            <option value="Natural Sciences & Mathematics">Natural Sciences & Mathematics</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Arts & Recreation">Arts & Recreation</option>
+                            <option value="Literature">Literature</option>
+                            <option value="History, Biography & Geography">History, Biography & Geography</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button"  class="cancel_btn">Cancel</button>
+                        <button type="submit" id="add-submit" class="btn-success">Add Book</button>
+                    </div>
+                </form>
+            </div>
+        </div> 
+
+        <div class="section" id="update_book">
+            <h2><ion-icon name="pencil"></ion-icon>Update Book</h2>
+            <form method="POST" action="">
+                <input type="hidden" name="action" value="update">
+                <input type="text" name="id" id="update-id" placeholder="Book ID (e.g., B001)" required>
+                <input type="text" name="title" id="update-title" placeholder="New Title" required>
+                <input type="text" name="author" id="update-author" placeholder="New Author" required>
+                <div class="error_msg">
+                    <input type="number" name="year" id="update-year" placeholder="New Year" required>
+                    <!-- <span class="error-message" id="update-year-error">Year must be 4 digits</span> -->
+                </div>
+                <select name="category" id="update-category" required>
+                    <option value="" disabled selected>New Category</option>
+                    <option value="Generalities">Generalities</option>
+                    <option value="Fiction">Fiction</option>
+                    <option value="Non-Fiction">Non-Fiction</option>
+                    <option value="Philosophy & Psychology">Philosophy & Psychology</option>
+                    <option value="Religion">Religion</option>
+                    <option value="Social Sciences">Social Sciences</option>
+                    <option value="Language">Language</option>
+                    <option value="Natural Sciences & Mathematics">Natural Sciences & Mathematics</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Arts & Recreation">Arts & Recreation</option>
+                    <option value="Literature">Literature</option>
+                    <option value="History, Biography & Geography">History, Biography & Geography</option>
+                </select>
+                <button type="submit" id="update-submit" class="btn-warning">Update Book</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <div class="modal-header">
+                    <h2><ion-icon name="book"></ion-icon>Current Books - Quick Actions</h2>
+                    <button type="button" id="open-add-btn" class="btn-success">Add Book</button>
+                </div>
+                <div class="table-container" style="max-height: 20rem">
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Year</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        <tr>
+                            <td style="width: 20%;">
+                                <div class="action-buttons">
+                                    <button class="action-btn btn-info">
+                                        <ion-icon name="pencil"></ion-icon>Update
+                                    </button>
+                                    <form method="POST" action="" style="display: inline;">
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="id">
+                                        <button type="submit" class="action-btn btn-danger"><ion-icon name="trash"></ion-icon>Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</body>
+</html>

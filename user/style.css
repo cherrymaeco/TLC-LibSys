@@ -1,0 +1,649 @@
+*{
+    text-decoration: none;        
+    margin: 0;
+}
+body{
+    min-height: 100vh;
+    font-family: "Nunito", sans-serif;
+}
+
+header{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem 0;
+    display: flex; gap: 1rem; 
+    flex-wrap: wrap;
+    z-index: 20;
+    background-color: #16100a64;
+    color: #FDF2E9;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #7D6B5A;
+    backdrop-filter: blur(2px);
+}
+header h3{
+    font-family: "Montserrat Alternates", sans-serif;
+    padding: 0 2rem; margin-right: 2rem;
+    font-size: 1.5rem;
+}
+header h3 span{
+    font-weight: 400;
+    opacity: .9;
+}
+nav{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .3rem;
+    padding: 5px;
+    border-radius: 50px;
+    border: 1px solid #7D6B5A;
+    background: linear-gradient(to bottom, #1E130A, #3E2C1B);
+}
+nav a{
+    padding: 1px 2rem; 
+    color: #FDF2E9;
+    border-radius: 20px;
+}
+
+.header_tools{
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-right: 2rem;
+}
+
+.search_box{
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .55rem .9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(253, 242, 233, 0.45);
+    background: rgba(255, 255, 255, 0.08);
+    min-width: 220px;
+}
+
+.search_icon{
+    font-size: 1.2rem;
+    line-height: 1;
+    opacity: .9;
+}
+
+.search_box input{
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #FDF2E9;
+    width: 100%;
+    font-size: .9rem;
+}
+
+.search_box input::placeholder{
+    color: rgba(253, 242, 233, 0.75);
+}
+
+.profile_btn{
+    width: 2.7rem;
+    height: 2.7rem;
+    border: 1px solid rgba(253, 242, 233, 0.5);
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+}
+
+.profile_avatar{
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    background: #FDF2E9;
+    color: #1E130A;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    font-size: .8rem;
+}
+
+.section{
+    background-color: #FDF2E9;
+    align-items: center;
+}
+
+/*================ Home Section ================*/
+#home{
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-image: url(../imgs/homebg.jpg);
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+#home::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(42, 28, 23, 0.75);
+    backdrop-filter: blur(3px);
+    z-index: 0;
+}
+
+#home > *{
+    position: relative;
+    z-index: 1;
+}
+
+#home div{
+    width: 100%;
+    padding: 5rem;
+    color: #FDF2E9;
+}
+#home h1{
+    font-family: "Montserrat Alternates", sans-serif;
+    margin-bottom: 1.7rem;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    letter-spacing: 1px;
+}
+#home p{
+    font-size: clamp(.8rem, 2vw, 1.2rem);
+    letter-spacing: 2px; line-height: 1.5;
+}
+#homeimg{
+    z-index: 1;
+    width: min(100%, 32rem);
+    height: 35rem; object-fit: contain;
+    margin-right: 5rem;
+}
+#browse_btn{
+    background-color: transparent;
+    margin-top: 2rem;
+    padding: .7rem 2.5rem;
+    border-radius: 10px;
+    border: 1px solid #FDF2E9;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    color: #FDF2E9;
+}
+#browse_btn:hover{
+    cursor: pointer;
+}
+
+/*================ Browse Books Section ================*/
+#browse_books{
+    padding: 2rem;
+    background-image: linear-gradient(to bottom, #1E130A, #3E2C1B);
+}
+#browse_header_text {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #FDF2E9;
+}
+#browse_header_text h2{
+    font-family: "Montserrat Alternates", sans-serif;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #d9c8b8;
+}
+#browse_header_text p{
+    padding: .5rem;
+}
+hr{
+    width: 80%;
+    justify-self: center; 
+    margin: .5rem;
+    border: 1px solid #FDF2E9;
+}
+
+#browse_books_container{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;  
+}
+
+/* ========================================== */
+.book_pagination{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem 1rem 2rem;
+    background: linear-gradient(to bottom, #1E130A, #3E2C1B);
+    color: #FDF2E9;
+}
+
+.page_numbers{
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.page_btn,
+.page_number{
+    border: 1px solid #7D6B5A;
+    background: rgba(255, 255, 255, 0.04);
+    color: #FDF2E9;
+    border-radius: 10px;
+    padding: .6rem .9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.page_btn:hover,
+.page_number:hover{
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #FDF2E9;
+}
+
+.page_number.active{
+    background: #FDF2E9;
+    color: #1E130A;
+    border-color: #FDF2E9;
+}
+
+/* ============ About Section ============== */
+#about{
+    background: #FDF2E9;
+    color: #1E130A;
+    padding: 4rem 2rem;
+}
+.about_wrapper{
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+    align-items: center;
+}
+.about_text h2{
+    font-family: "Montserrat Alternates", sans-serif;
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+}
+.about_text p{
+    margin-bottom: 1rem;
+    line-height: 1.7;
+}
+.section_tag{
+    color: #7D3F28;
+    text-transform: uppercase;
+    letter-spacing: 0.12rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    margin-bottom: .75rem;
+}
+.about_stats{
+    display: grid;
+    gap: 1rem;
+}
+.stat_card{
+    background: #fff;
+    border: 1px solid #d9c8b8;
+    border-radius: 12px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(30, 19, 10, 0.05);
+}
+.stat_number{
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #3E2C1B;
+    font-family: "Montserrat Alternates", sans-serif;
+}
+.stat_label{
+    display: block;
+    margin-top: .4rem;
+    color: #3E2C1B;
+    font-weight: 700;
+}
+
+/* Book Card */
+.book_card{
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    background-color: #3e2c1bce;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    border: 1px solid #3E2C1B;
+}
+.book_card:hover{
+    transform: scale(1.02);
+    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.08);
+    transition: transform 0.3s ease-in-out;    
+    border: 1px solid #7D6B5A;
+}
+.book_img{
+    width: 100%; height: 15rem; object-fit: contain;
+    border-radius: 10px;
+}
+.book_info{
+    display: flex; flex-direction: column; gap: 5px;
+    flex: 1;
+    padding: 1rem;
+    color: #FDF2E9;
+    font-size: 0.9rem;
+}
+.book_info h3{
+    font-family: "Montserrat Alternates", sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+.book_info p{
+    font-size: 0.8rem;
+    font-weight: bolder;
+}
+.book_info span{
+    font-weight: normal;
+}
+.flex{
+    display: flex; gap: 1rem; margin-bottom: 0.5rem;
+    justify-content: space-between;
+}
+.book_actions{
+    display: flex;
+    margin-top: auto;
+    padding: 0 1rem 1rem;
+    gap: 1rem;
+}
+.book_actions button{
+    flex: 1;
+    padding: .3rem 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    background: linear-gradient(to bottom, #1E130A, #3E2C1B);
+    border: 1px solid #7D6B5A;
+    color: #FDF2E9;
+}
+.book_actions button:hover{
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #FDF2E9;
+}
+/* =========== Book Modal =========== */
+.book_modal{
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    padding: 2rem;
+    background: rgba(22, 16, 10, .82);
+    align-items: center;
+    justify-content: center;
+}
+.book_modal.is_open{
+    display: flex;
+}
+.book_modal_content{
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(300px, .8fr) minmax(200px, 1fr);
+    grid-template-areas:
+        "header header"
+        "details viewer";
+    gap: 1rem;
+    width: min(100%, 950px);
+    max-height: 90vh;
+    overflow: auto;
+    padding: 1.5rem;
+    background: #FDF2E9;
+    color: #1E130A;
+    border-radius: 10px;
+}
+.modal_header{
+    grid-area: header;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .5rem;
+    padding-bottom: .75rem;
+    border-bottom: 1px solid #d9c8b8;
+}
+.modal_header h3{
+    font-family: "Montserrat Alternates", sans-serif;
+    font-size: 1.2rem;
+}
+.modal_close{
+    width: 30px; height: 30px;
+    background: #3E2C1B;
+    color: #FDF2E9;
+    font-size: 2rem;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 1rem;
+    border: 0;
+    display: flex; align-items: center; justify-content: center;
+}
+.modal_book_details{
+    grid-area: details;
+}
+.modal_book_details h2{
+    margin-bottom: 1rem;
+    font-family: "Montserrat Alternates", sans-serif;
+}
+.modal_book_details p{
+    font-size: 0.8rem;
+    margin-bottom: .5rem;
+    line-height: 1.5;
+}
+.modal_book_details a{
+    color: #7D3F28;
+    font-weight: bold;
+}
+#modal_book_description{
+    margin-top: 1rem; margin-bottom: 1rem;
+    text-indent: 1.5rem;
+    height: 250px;
+    overflow: auto;
+}
+#viewerCanvas{
+    grid-area: viewer;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 480px;
+    max-height: 70vh;
+    background: #fff !important;
+    border-radius: 10px !important;
+    border: 2px solid #3E2C1B !important;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05) !important;
+}
+#viewerCanvas iframe{
+    width: 100%;
+    height: 100%;
+    min-height: 480px;
+    border: 0;
+    background: #fff;
+}
+.book_preview_cover{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+.preview_placeholder{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    color: #3E2C1B;
+    font-weight: 700;
+    text-align: center;
+}
+.viewer_message{
+    width: 100%;
+    grid-column: 2;
+    margin-top: -2.5rem;
+    text-align: center;
+    color: #FDF2E9;
+    background-color: #3E2C1B;
+    padding: .5rem 1px;
+    border-radius: 0 0 10px 10px;
+}
+
+.borrow_modal{
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background: rgba(22, 16, 10, .82);
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+.borrow_modal.is_open{
+    display: flex;
+}
+.borrow_modal_content{
+    width: min(100%, 500px);
+    background: #FDF2E9;
+    color: #1E130A;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+.borrow_header{
+    margin-bottom: 1rem;
+}
+.borrow_summary{
+    margin-bottom: 1.2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #d9c8b8;
+}
+.borrow_summary p{
+    margin-bottom: .5rem;
+    font-size: 0.9rem;
+}
+.borrow_form{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.form_group{
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+}
+.form_group label{
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+.form_group input{
+    padding: .75rem .9rem;
+    border-radius: 8px;
+    border: 1px solid #7D6B5A;
+    background: #fff;
+    color: #1E130A;
+    font-size: 0.95rem;
+}
+.borrow_modal_actions{
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+    margin-top: .5rem;
+}
+.borrow_modal_actions button{
+    padding: .7rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+}
+.cancel_btn{
+    background: #e7ddd2;
+    color: #1E130A;
+}
+.confirm_btn{
+    background: #3E2C1B;
+    color: #FDF2E9;
+}
+.borrow_modal_close{
+    width: 30px; height: 30px;
+    background: #3E2C1B;
+    color: #FDF2E9;
+    font-size: 2rem;
+    cursor: pointer;
+    border-radius: 50%;
+    padding: 1rem;
+    border: 0;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/*================ Scale ================*/
+@media (max-width: 1200px){
+    .about_wrapper{
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 1024px){
+    #home{
+        min-height: auto;
+        padding-top: 1rem;
+    }
+    #home div{
+        padding: 3rem 2rem 1rem;
+    }
+    #homeimg{
+        height: 24rem;
+    }
+}
+@media (max-width: 768px) {
+    #home{
+        flex-direction: column;
+        height: fit-content;
+    }
+    #home div{
+        text-align: center;
+        margin-top: 9rem;
+        padding: 0; width: 80%;
+    }
+    #homeimg{
+        height: 18rem;
+        padding-bottom: 1.5rem; margin-right: 1rem;
+    }
+}
+@media (max-width: 480px){
+    header h3{
+        margin-right: 0;
+        padding: 0 1rem;
+    }
+    nav a{
+        padding: 0.3rem 0.9rem;
+    }
+    #browse_books,
+    #about{
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    .book_modal{
+        padding: .5rem;
+    }
+    .book_modal_content{
+        grid-template-columns: 1fr;
+        padding: 1.5rem 1rem;
+    }
+    .book_actions{
+        flex-direction: column;
+    }
+    #viewerCanvas{
+        min-height: 360px;
+    }
+    .viewer_message{
+        grid-column: 1;
+    }
+    #homeimg{
+        height: 15rem; margin: 0;
+    }
+}

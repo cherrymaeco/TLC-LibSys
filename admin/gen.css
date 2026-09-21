@@ -1,0 +1,33 @@
+*{
+    text-decoration: none;        
+    margin: 0;
+}
+body{
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: "Nunito", sans-serif;
+}
+header{
+    padding: 1rem 0;
+    display: flex; gap: 1rem;
+    background-color: #2F2013;
+    color: #FDF2E9;
+    width: 100%;
+    align-items: center;
+    border-bottom: 1px solid #7D6B5A;
+}
+header h3{
+    padding: 0 2rem; margin-right: 2rem;
+    font-size: 1.5rem;
+}
+nav{
+    padding: 5px;
+    border-radius: 50px;
+    border: 1px solid #7D6B5A;
+    background-color: #3E2C1B;
+}
+nav a{
+    padding: 1px 2rem; 
+    color: #FDF2E9;
+    border-radius: 20px;
+}

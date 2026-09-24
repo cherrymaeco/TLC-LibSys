@@ -1,6 +1,4 @@
 (function() {
-    // >>>>>>>>>>  STEP: paste your Web App URL between the quotes  <<<<<<<<<<
-    // It looks like: https://script.google.com/macros/s/AKfycb.../exec
     const MY_BOOKS_API_URL = 'https://script.google.com/macros/s/AKfycbzt1DfmssyHbDIpMRms_iuiJJ_iMRWIt9LqEb0TIRLHyIBjsqkj_-FHHsNON59LF7s/exec';
 
     const myBooksMessage = document.getElementById('my_books_message');

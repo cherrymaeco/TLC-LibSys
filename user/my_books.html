@@ -92,17 +92,26 @@
 </body>
 </html>
 <style>
+body{
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
 header{
     background-color: #1E130A;
+    position: relative;
+    flex: 0 0 auto;
+    box-sizing: border-box;
 }
 /* ========== Sidebar Navigation ========== */
 .sidebar{
     display: flex; flex-direction: column;
     border: 1px solid #7D6B5A;
     background: linear-gradient(to bottom, #3E2C1B, #4b3e31);
-    height: 100%;
-    padding-top: 11rem;
-    width: 15rem;
+    flex: 0 0 clamp(12rem, 18vw, 15rem);
+    height: auto;
+    padding-top: 1.5rem;
     color: #FDF2E9;
 }
 .sidebar a{
@@ -119,15 +128,20 @@ header{
 /* ============ My Books Section ============== */
 #my_books{
     display: flex;
-    height: 100vh;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
     box-sizing: border-box;
     background-color: #FDF2E9;
     color: #3E2C1B;
-    overflow: hidden;
+    align-items: stretch;
+    overflow: auto;
 }
 .content{
+    flex: 1 1 auto;
     width: 100%;
-    height: calc(100% - 12rem);
+    height: auto;
+    padding: clamp(1rem, 3vw, 2rem);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -158,7 +172,7 @@ header{
 
 #my_books_table_wrap{
     flex: 1 1 auto;
-    min-height: calc(100% - 5rem);
+    min-height: 0;
     max-width: 1000px;
     margin: 0 auto;
     width: 100%;
@@ -185,7 +199,7 @@ header{
     display: flex;
     align-items: center;
     gap: .5rem;
-    flex: 1 1 18rem;
+    flex: 1 1 1rem;
     max-width: 28rem;
     padding: .5rem .85rem;
     border: 1px solid #7D6B5A;
@@ -265,7 +279,27 @@ header{
     font-weight: 800;
     color: #2f6b3a;
 }
-@media (max-width: 640px){
+@media (max-width: 768px){
+    #my_books{
+        flex: 0 0 auto;
+        min-height: calc(100svh - 1px);
+        flex-direction: column;
+        overflow: auto;
+    }
+    .sidebar{
+        flex: 0 0 auto;
+        width: 100%;
+    }
+    .sidebar label{
+        text-align: center;
+    }
+    .sidebar a{
+        padding: .85rem 1rem;
+    }
+    .content{
+        flex: 1 1 auto;
+        min-height: 0;
+    }
     .table_tools{
         align-items: stretch;
         flex-direction: column;

@@ -589,7 +589,7 @@ hr{
 @media (max-width: 1024px){
     #home{
         min-height: auto;
-        padding-top: 1rem;
+        padding-top: 3rem;
     }
     #home div{
         padding: 3rem 2rem 1rem;
@@ -602,6 +602,7 @@ hr{
     #home{
         flex-direction: column;
         height: fit-content;
+        padding-top: 5rem;
     }
     #home div{
         text-align: center;

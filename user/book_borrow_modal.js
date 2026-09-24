@@ -5,26 +5,32 @@ const borrowForm = document.getElementById('borrow_form');
 const borrowBookTitle = document.getElementById('borrow_book_title');
 const borrowBookAuthor = document.getElementById('borrow_book_author');
 const borrowerNameInput = document.getElementById('borrower_name');
+const borrowerEmailInput = document.getElementById('borrower_email');
 const dueDateInput = document.getElementById('borrow_due_date');
 
-const borrowBookData = {
-    book1: { title: 'The Lessons of History', author: 'Ariel Durant and Will Durant' },
-    book2: { title: 'The Merriam-Webster Dictionary', author: 'Merriam-Webster' },
-    book3: { title: "Merriam-Webster's Collegiate Dictionary (Twelfth Edition)", author: 'Merriam-Webster' },
-    book4: { title: 'Book Title 1', author: 'John Doe' },
-    book5: { title: 'Book Title 1', author: 'John Doe' }
-};
+let currentBook = null;   // the book the student clicked "Borrow" on
+
+function todayISO() {
+    const now = new Date();
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+}
 
 function openBorrowModal(button) {
-    const book = borrowBookData[button.id] || {
-        title: button.closest('.book_card')?.querySelector('.book_info h3')?.textContent.trim() || 'Unknown Title',
-        author: button.closest('.book_card')?.querySelector('.book_info p')?.textContent.replace('Author:', '').trim() || 'Unknown Author'
+    const card = button.closest('.book_card');
+    const details = window.TLCBookDetails?.getBook(button.id);
+    currentBook = {
+        id: button.id,
+        title: card?.querySelector('.book_info h3')?.textContent.trim() || 'Unknown Title',
+        author: card?.querySelector('.book_info p span')?.textContent.trim() || 'Unknown Author',
+        ISBN: details?.isbn || ''
     };
 
-    borrowBookTitle.textContent = book.title;
-    borrowBookAuthor.textContent = book.author;
+    borrowBookTitle.textContent = currentBook.title;
+    borrowBookAuthor.textContent = currentBook.author;
     borrowerNameInput.value = '';
+    borrowerEmailInput.value = '';
     dueDateInput.value = '';
+    dueDateInput.min = todayISO();   // can't pick a due date in the past
     borrowModal.classList.add('is_open');
     borrowModal.setAttribute('aria-hidden', 'false');
     borrowerNameInput.focus();
@@ -50,19 +56,44 @@ borrowModal.addEventListener('click', (event) => {
     }
 });
 
-borrowForm.addEventListener('submit', (event) => {
+borrowForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const borrowerName = borrowerNameInput.value.trim();
+    const borrowerEmail = borrowerEmailInput.value.trim();
     const dueDate = dueDateInput.value;
 
-    if (!borrowerName || !dueDate) {
-        alert('Please fill in both the borrower name and due date.');
+    if (!borrowerName || !borrowerEmail || !dueDate) {
+        alert('Please fill in your name, email, and due date.');
         return;
     }
 
-    alert(`Book borrowed by ${borrowerName} until ${dueDate}.`);
-    closeBorrowModal();
-    borrowForm.reset();
+    const confirmButton = borrowForm.querySelector('.confirm_btn');
+    confirmButton.disabled = true;
+    confirmButton.textContent = 'Saving...';
+
+    try {
+        const saveResult = await window.TLCMyBooks.saveBorrowRecord({
+            borrowerName: borrowerName,
+            email: borrowerEmail,
+            ISBN: currentBook.ISBN,
+            title: currentBook.title,
+            author: currentBook.author,
+            dueDate: dueDate
+        });
+
+        const emailWarning = Array.isArray(saveResult.emailWarnings) && saveResult.emailWarnings.length
+            ? '\n\nEmail warning:\n' + saveResult.emailWarnings.join('\n')
+            : '';
+        alert(`Book borrowed by ${borrowerName} until ${dueDate}.${emailWarning}`);
+        closeBorrowModal();
+        borrowForm.reset();
+        window.TLCMyBooks.showMyBooks();   // refresh the My Books section
+    } catch (error) {
+        alert('Sorry, the borrow could not be saved.\n' + error.message);
+    } finally {
+        confirmButton.disabled = false;
+        confirmButton.textContent = 'Confirm';
+    }
 });
 
 document.addEventListener('keydown', (event) => {

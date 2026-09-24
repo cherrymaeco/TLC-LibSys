@@ -32,7 +32,8 @@ header h3 span{
     font-weight: 400;
     opacity: .9;
 }
-nav{
+/* ========== Main Navigation Header ========== */
+.main_nav{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -42,7 +43,7 @@ nav{
     border: 1px solid #7D6B5A;
     background: linear-gradient(to bottom, #1E130A, #3E2C1B);
 }
-nav a{
+.main_nav a{
     padding: 1px 2rem; 
     color: #FDF2E9;
     border-radius: 20px;
@@ -65,13 +66,11 @@ nav a{
     background: rgba(255, 255, 255, 0.08);
     min-width: 220px;
 }
-
 .search_icon{
     font-size: 1.2rem;
     line-height: 1;
     opacity: .9;
 }
-
 .search_box input{
     border: none;
     outline: none;
@@ -207,8 +206,8 @@ hr{
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;  
 }
-
-/* ========================================== */
+  
+/* ================= Pagination ========================= */
 .book_pagination{
     display: flex;
     align-items: center;

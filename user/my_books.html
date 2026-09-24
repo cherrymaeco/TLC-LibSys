@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLC LibSys</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inspiration&family=M+PLUS+1p&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Pontano+Sans:wght@300&display=swap"
+        rel="stylesheet">
+    <script src="https://www.google.com/books/jsapi.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="current_book_records.js" defer></script>
+</head>
+<body>
+
+    <header>
+        <h3>TLC<span> LibSys</span></h3>
+        <nav class="main_nav">
+            <a href="main.html#home">Home</a>
+            <a href="main.html#browse">Browse</a>
+            <a href="my_books.html" style="background-color: #d9c8b8; color: #1E130A; font-weight: bold;">My Books</a>
+            <a href="#my_books">History</a>
+            <a href="main.html#about">About</a>
+        </nav>
+
+        <div class="header_tools">
+            <label class="search_box" aria-label="Search books">
+                <span class="search_icon">⌕</span>
+                <input type="search" placeholder="Search books...">
+            </label>
+
+            <button type="button" class="profile_btn" aria-label="Profile">
+                <span class="profile_avatar">U</span>
+            </button>
+        </div>
+    </header>
+    
+    <!-- ========== Current Borrowed Books ========== -->
+    <div class="section" id="my_books">
+
+        <nav class="sidebar">
+            <label for="">LISTS</label>
+            <a href="" style="background-color: #1e130a6f; border-left: 5px solid #d9c8b8; color: #FDF2E9; font-weight: bold;">Current Books</a>
+            <a href="">Waitlist</a>
+            <a href="">Want to Read</a>
+            <a href="">Favorites</a>
+        </nav>
+
+        <div class="content">
+            <div id="my_books_header_text">
+                <h2>Current Borrowed Books</h2>
+                <hr>
+                <p>All books currently borrowed from the library.</p>
+            </div>
+
+            <p id="my_books_message" class="my_books_message"></p>
+
+            <div id="my_books_table_wrap">
+                <div class="table_tools">
+                    <label class="table_search_box" aria-label="Search books in current loans">
+                        <span class="search_icon">⌕</span>
+                        <input type="search" placeholder="Search current books...">
+                    </label>
+                    <label class="filter_control">
+                        <span>Filter</span>
+                        <select aria-label="Filter current books">
+                            <option value="all">All books</option>
+                            <option value="due-soon">Due soon</option>
+                            <option value="overdue">Overdue</option>
+                        </select>
+                    </label>
+                </div>
+
+                <table id="my_books_table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Due Date</th>
+                            <th>Borrow Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="my_books_body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+<style>
+header{
+    background-color: #1E130A;
+}
+/* ========== Sidebar Navigation ========== */
+.sidebar{
+    display: flex; flex-direction: column;
+    border: 1px solid #7D6B5A;
+    background: linear-gradient(to bottom, #3E2C1B, #4b3e31);
+    height: 100%;
+    padding-top: 11rem;
+    width: 15rem;
+    color: #FDF2E9;
+}
+.sidebar a{
+    padding: 1.5rem;
+    color: #FDF2E9;
+    
+}
+.sidebar label{
+    font-family: "Montserrat Alternates", sans-serif;
+    padding: .5rem 1rem; margin-bottom: .5rem;
+    border-bottom: 1px solid #d9c8b8;
+    letter-spacing: 2px;
+}
+/* ============ My Books Section ============== */
+#my_books{
+    display: flex;
+    height: 100vh;
+    box-sizing: border-box;
+    background-color: #FDF2E9;
+    color: #3E2C1B;
+    overflow: hidden;
+}
+.content{
+    width: 100%;
+    height: calc(100% - 12rem);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+#my_books_header_text{
+    text-align: center;
+    margin-bottom: 1rem;
+}
+#my_books_header_text h2{
+    font-family: "Montserrat Alternates", sans-serif;
+    font-size: 1.7rem;
+    margin-bottom: 0.5rem;
+}
+#my_books_header_text hr{
+    border-color: #3E2C1B;
+}
+#my_books_header_text p{
+    padding: .5rem;
+    font-size: .9rem;
+}
+.my_books_message{
+    text-align: center;
+    margin-bottom: .5rem;
+    color: #7D6B5A;
+}
+
+#my_books_table_wrap{
+    flex: 1 1 auto;
+    min-height: calc(100% - 5rem);
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+    overflow: auto;
+    border-radius: 12px;
+    border: 1px solid #7D6B5A;
+    background: #FDF2E9;
+    color: #1E130A;
+}
+#my_books_table_wrap[hidden]{
+    display: none;
+}
+.table_tools{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #d9c8b8;
+    background: #3E2C1B;
+    font-size: .8rem;
+}
+.table_search_box{
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex: 1 1 18rem;
+    max-width: 28rem;
+    padding: .5rem .85rem;
+    border: 1px solid #7D6B5A;
+    border-radius: 8px;
+    background: #FDF2E9;
+    color: #3E2C1B;
+}
+.table_search_box:focus-within{
+    border-color: #3E2C1B;
+    box-shadow: 0 0 0 3px rgba(125, 107, 90, .2);
+}
+.table_search_box input{
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #1E130A;
+    font: inherit;
+}
+.table_search_box input::placeholder{
+    color: #7D6B5A;
+}
+.filter_control{
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    color: #3E2C1B;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.filter_control select{
+    min-width: 9rem;
+    padding: .5rem 2rem;
+    border: 1px solid #7D6B5A;
+    border-radius: 8px;
+    background: #FDF2E9;
+    color: #1E130A;
+    font: inherit;
+    cursor: pointer;
+}
+.filter_control select:focus{
+    outline: 0;
+    border-color: #3E2C1B;
+    box-shadow: 0 0 0 3px rgba(125, 107, 90, .2);
+}
+#my_books_table{
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+}
+#my_books_table th,
+#my_books_table td{
+    padding: .8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #d9c8b8;
+}
+#my_books_table tbody tr:hover{
+    background: #d9c8b8;
+}
+#my_books_table th{
+    background: #3E2C1B;
+    color: #FDF2E9;
+    font-family: "Montserrat Alternates", sans-serif;
+    font-size: .8rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+#my_books_table tbody tr:last-child td{
+    border-bottom: none;
+}
+#my_books_table td.status_borrowed{
+    font-weight: 800;
+    color: #7D3F28;
+}
+#my_books_table td.status_returned{
+    font-weight: 800;
+    color: #2f6b3a;
+}
+@media (max-width: 640px){
+    .table_tools{
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .table_search_box{
+        max-width: none;
+    }
+    .filter_control{
+        justify-content: space-between;
+    }
+    .filter_control select{
+        flex: 1;
+    }
+}
+
+</style>

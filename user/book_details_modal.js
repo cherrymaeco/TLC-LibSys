@@ -197,6 +197,12 @@ const bookData = {
     }
 };
 
+window.TLCBookDetails = {
+    getBook: function (bookId) {
+        return bookData[bookId] || null;
+    }
+};
+
 google.books.load();
 google.books.setOnLoadCallback(() => {
     bookViewer = new google.books.DefaultViewer(viewerCanvas);

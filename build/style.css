@@ -1,0 +1,123 @@
+*{
+    text-decoration: none;        
+    margin: 0;
+}
+body{
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: "Nunito", sans-serif;
+}
+#page{
+    display: flex;
+    background-color: #FDF2E9;
+    min-height: 100vh;
+}
+h1{
+    font-family: "Montserrat Alternates", sans-serif;
+    margin: 1rem;
+    font-size: 3rem;
+}
+p{
+    margin: .5rem; 
+    font-size: 1.1rem;
+}
+hr{
+    width: 80%; justify-self: center; background-color: #3E2C1B;
+    border: none; height: 1px;
+}
+
+input,select{
+    display: block; justify-self: center; margin: 1.5rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
+    background-color: #D9B99F;
+    color: #3E2C1B;
+    border: 1px solid transparent;
+    outline: #3E2C1B;
+    font-size: 1.1rem;
+    width: 20rem;
+}
+input:focus{
+    outline: 3px solid #3E2C1B;
+    background-color: #ecd9ca;
+}
+.input_container.flex{
+    display: flex; 
+    justify-content: center;
+}
+.input_container.flex input{
+    width: 15rem; margin: 1rem;
+}
+select{
+    width: 18.1rem;
+    margin: 1rem;
+}
+
+button{
+    margin-top: 1rem;
+    padding: .5rem 2.5rem;
+    border-radius: 10px;
+    text-transform: uppercase;
+    font-weight: bolder;
+    font-size: 1.2rem;
+}
+button:hover, #forgot_pass:hover{
+    cursor: pointer;
+}
+
+#login_section,
+#signup_section{
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    text-align: center;
+    align-content: center;
+}
+#login_section{
+    border-radius: 0 5rem 5rem 0;
+}
+#signup_section{
+    border-radius: 5rem 0 0 5rem;
+}
+
+.active_section h1{
+    color: #3E2C1B;
+}
+.active_section p{
+    color: #7D6B5A;
+    margin: 1.8rem;
+}
+.active_section button{
+    background-color: #3E2C1B;
+    color: #ecd9ca;
+    border: none;
+}
+
+.inactive_section{
+    position: relative;
+    background-image: url(../imgs/login_signup_bg.jpg);
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    color: #FDF2E9;
+}
+.inactive_section::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(110, 76, 63, 0.5);
+    backdrop-filter: blur(2px);
+}
+.inactive_section > *{
+    position: relative;
+    z-index: 1;
+}
+.inactive_section button{
+    background-color: #FDF2E9;
+    color: #3E2C1B;
+    border: none;
+}
+
+#logo{
+    width: 100%; height: 12rem; object-fit: contain;
+}

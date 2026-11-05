@@ -1,0 +1,360 @@
+<?php
+session_start();
+$firstInitial = '';
+if (isset($_SESSION['first_name']) && is_string($_SESSION['first_name'])) {
+    $firstInitial = strtoupper(substr(trim($_SESSION['first_name']), 0, 1));
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLC LibSys</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inspiration&family=M+PLUS+1p&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Pontano+Sans:wght@300&display=swap"
+        rel="stylesheet">
+    <script src="https://www.google.com/books/jsapi.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/user.css">
+    <script src="../assets/js/user/book_details_modal.js" defer></script>
+    <script src="../assets/js/user/current_book_records.js" defer></script>
+    <script src="../assets/js/user/book_borrow_modal.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <h3>TLC<span> LibSys</span></h3>
+        <nav class="main_nav">
+            <a href="#home">Home</a>
+            <a href="#browse_books">Browse</a>
+            <a href="my_books.html#my_books">My Books</a>
+            <a href="my_books.html#my_books">History</a>
+            <a href="#about">About</a>
+        </nav>
+
+        <div class="header_tools">
+            <label class="search_box" aria-label="Search books">
+                <span class="search_icon">⌕</span>
+                <input type="search" placeholder="Search books...">
+            </label>
+
+            <button type="button" class="profile_btn" aria-label="Profile">
+                <span class="profile_avatar"><?= htmlspecialchars($firstInitial, ENT_QUOTES, 'UTF-8') ?></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="section" id="home">
+        <div>
+            <h1>Welcome to TLC LibSys</h1>
+            <p>Discover a world of knowledge and imagination with our vast collection of books.</p>
+            <a href="#browse_books"><button id="browse_btn">Browse</button></a>
+        </div>
+        <img src="../assets/imgs/homeimg.png" alt="" id="homeimg">
+    </div>
+
+
+    <div class="section" id="browse_books">
+        <div id="browse_header_text">
+            <h2>Browse Books</h2>
+            <hr>
+            <p>Discover our extensive collection of books across various genres.</p>
+        </div>
+        <div id="browse_books_container">
+            <div class="book_card">
+                <img src="../assets/imgs/book1.jpg" alt="" class="book_img">
+                <div class="book_info">
+                    <h3>The Lessons of History</h3>
+                    <p>Author: <span>Ariel Durant and Will Durant</span></p>
+                    <p>Year: <span>1968 </span></p>
+                    <p>Genre: <span>History</span></p>
+                    <p>Status: <span id="book_status">Available</span></p>
+                    <div class="flex">
+                        <p>Pages: <span>117</span></p>
+                        <p>Format: <span>E-Book</span></p>
+                    </div>
+                    <div class="book_actions">
+                        <button class="details_button" type="button" id="book1">Details</button>
+                        <button>Borrow</button>
+                    </div>
+                </div>
+            </div>
+            <div class="book_card">
+                <img src="../assets/imgs/book2.jpg" alt="" class="book_img">
+                <div class="book_info">
+                    <h3>The Merriam-Webster Dictionary</h3>
+                    <p>Author: <span>Merriam-Webster</span></p>
+                    <p>Year: <span>2020</span></p>
+                    <p>Genre: <span>Reference</span></p>
+                    <p>Status: <span id="book_status">Available</span></p>
+                    <div class="flex">
+                        <p>Pages: <span>320</span></p>
+                        <p>Format: <span>Physical</span></p>
+                    </div>
+                    <div class="book_actions">
+                        <button class="details_button" type="button" id="book2">Details</button>
+                        <button>Borrow</button>
+                    </div>
+                </div>
+            </div>
+            <div class="book_card">
+                <img src="../assets/imgs/book3.jpg" alt="" class="book_img">
+                <div class="book_info">
+                    <h3>Merriam-Webster's Collegiate Dictionary (Twelfth Edition)</h3>
+                    <p>Author: <span>Merriam-Webster</span></p>
+                    <p>Year: <span>2025</span></p>
+                    <p>Genre: <span>Reference</span></p>
+                    <p>Status: <span>Available</span></p>
+                    <div class="flex">
+                        <p>Pages: <span>320</span></p>
+                        <p>Format: <span>Physical</span></p>
+                    </div>
+                    <div class="book_actions">
+                        <button class="details_button" type="button" id="book3">Details</button>
+                        <button>Borrow</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="book_card">
+                <img src="../assets/imgs/book4.jpg" alt="" class="book_img">
+                <div class="book_info">
+                    <h3>The Structure of Scientific Revolutions</h3>
+                    <p>Author: <span>Thomas S. Kuhn </span></p>
+                    <p>Year: <span>2012</span></p>
+                    <p>Genre: <span>Science</span></p>
+                    <p>Status: <span>Available</span></p>
+                    <div class="flex">
+                        <p>Pages: <span>320</span></p>
+                        <p>Format: <span>E-Book</span></p>
+                    </div>
+                    <div class="book_actions">
+                        <button class="details_button" type="button" id="book4">Details</button>
+                        <button>Borrow</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="book_card">
+                <img src="../assets/imgs/book5.jpg" alt="" class="book_img">
+                <div class="book_info">
+                    <h3>The Well-Educated Mind</h3>
+                    <p>Author: <span>Susan Wise Bauer </span></p>
+                    <p>Year: <span>2015</span></p>
+                    <p>Genre: <span>General</span></p>
+                    <p>Status: <span>Available</span></p>
+                    <div class="flex">
+                        <p>Pages: <span>480</span></p>
+                        <p>Format: <span>E-Book</span></p>
+                    </div>
+                    <div class="book_actions">
+                        <button class="details_button" type="button" id="book5">Details</button>
+                        <button>Borrow</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="book_card">
+                <img src="../assets/imgs/book6.jpg" alt="" class="book_img">
+                <div class="book_info">
+                    <h3>Understanding Life Through Science for Grade 1</h3>
+                    <p>Author: <span>Wilma Lyn N. Aldon, Javiez & Torres, PhD</span></p>
+                    <p>Year: <span>2015</span></p>
+                    <p>Genre: <span>Science</span></p>
+                    <p>Status: <span>Available</span></p>
+                    <div class="flex">
+                        <p>Pages: <span>150</span></p>
+                        <p>Format: <span>Physical</span></p>
+                    </div>
+                    <div class="book_actions">
+                        <button class="details_button" type="button" id="book6">Details</button>
+                        <button>Borrow</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="book_card">
+                <img src="../assets/imgs/book7.jpg" alt="" class="book_img">
+                <div class="book_info">
+                    <h3>Cora Cooks Pancit</h3>
+                    <p>Author: <span>Dorina K. Lazo Gilmore</span></p>
+                    <p>Year: <span>2009</span></p>
+                    <p>Genre: <span>Fiction</span></p>
+                    <p>Status: <span>Available</span></p>
+                    <div class="flex">
+                        <p>Pages: <span>32</span></p>
+                        <p>Format: <span>Physical</span></p>
+                    </div>
+                    <div class="book_actions">
+                        <button class="details_button" type="button" id="book7">Details</button>
+                        <button>Borrow</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="book_card">
+                <img src="../assets/imgs/book8.jpg" alt="" class="book_img">
+                <div class="book_info">
+                    <h3>The Tale of Benjamin Bunny</h3>
+                    <p>Author: <span>Beatrix Potter</span></p>
+                    <p>Year: <span>2020</span></p>
+                    <p>Genre: <span>Fiction</span></p>
+                    <p>Status: <span>Available</span></p>
+                    <div class="flex">
+                        <p>Pages: <span>320</span></p>
+                        <p>Format: <span>E-Book</span></p>
+                    </div>
+                    <div class="book_actions">
+                        <button class="details_button" type="button" id="book8">Details</button>
+                        <button>Borrow</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="book_card">
+                <img src="../assets/imgs/book9.jpg" alt="" class="book_img">
+                <div class="book_info">
+                    <h3>The Tainted Cup</h3>
+                    <p>Author: <span>Robert Jackson Bennet</span></p>
+                    <p>Year: <span>2025</span></p>
+                    <p>Genre: <span>Fantasy</span></p>
+                    <p>Status: <span>Available</span></p>
+                    <div class="flex">
+                        <p>Pages: <span>320</span></p>
+                        <p>Format: <span>Physical</span></p>
+                    </div>
+                    <div class="book_actions">
+                        <button class="details_button" type="button" id="book9">Details</button>
+                        <button>Borrow</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="book_card">
+                <img src="../assets/imgs/book10.jpg" alt="" class="book_img">
+                <div class="book_info">
+                    <h3>Discovering the World of Geography, Grades 7 - 8</h3>
+                    <p>Author: <span>Myrl Shireman </span></p>
+                    <p>Year: <span>2008</span></p>
+                    <p>Genre: <span>Geography</span></p>
+                    <p>Status: <span>Available</span></p>
+                    <div class="flex">
+                        <p>Pages: <span>320</span></p>
+                        <p>Format: <span>E-Book</span></p>
+                    </div>
+                    <div class="book_actions">
+                        <button class="details_button" type="button" id="book10">Details</button>
+                        <button>Borrow</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== Book Browsing Pagination =========== -->
+    <div class="book_pagination" aria-label="Book browsing pagination">
+        <button type="button" class="page_btn page_prev" aria-label="Previous page">Previous</button>
+        <div class="page_numbers" aria-label="Page numbers">
+            <button type="button" class="page_number active" aria-label="Page 1">1</button>
+            <button type="button" class="page_number" aria-label="Page 2">2</button>
+            <button type="button" class="page_number" aria-label="Page 3">3</button>
+        </div>
+        <button type="button" class="page_btn page_next" aria-label="Next page">Next</button>
+    </div>
+
+    <!-- ========== About Section =========== -->
+    <div class="section" id="about">
+        <div class="about_wrapper">
+            <div class="about_text">
+                <p class="section_tag">About</p>
+                <h2>Building a smarter way to discover and borrow books.</h2>
+                <p>
+                    TLC LibSys is designed to make reading more accessible and organized for students, researchers, and everyday library users. With a simple, user-friendly interface, members can browse the collection, review details, and borrow books with ease.
+                </p>
+                <p>
+                    Our mission is to combine a welcoming digital library experience with efficient book management so everyone can spend more time reading and less time searching.
+                </p>
+            </div>
+            <div class="about_stats">
+                <div class="stat_card">
+                    <span class="stat_number">10+</span>
+                    <span class="stat_label">Book Titles</span>
+                </div>
+                <div class="stat_card">
+                    <span class="stat_number">Digital/Physical</span>
+                    <span class="stat_label">Formats</span>
+                </div>
+                <div class="stat_card">
+                    <span class="stat_number">24/7</span>
+                    <span class="stat_label">Access</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ======= Book details modal ======= -->
+    <div class="book_modal" id="book_details_modal" aria-hidden="true">
+        <div class="book_modal_content" role="dialog" aria-modal="true" aria-labelledby="modal_book_title">
+            <div class="modal_header">
+                <h3>Book Details</h3>
+                <button class="modal_close" type="button" aria-label="Close book viewer">&times;</button>
+            </div>
+            <div class="modal_book_details">
+                <h2 id="modal_book_title">Book details</h2>
+                <p id="modal_book_author"></p>
+                <p id="published"></p>
+                <p id="publisher"></p>
+                <p id="genre"></p>
+                <p id="language"></p>
+                <p id="page_count"></p>
+                <p id="modal_book_description"></p>
+                <a id="google_books_link" href="#" target="_blank" rel="noopener">Open on Google Books</a>
+            </div>
+            <div id="viewerCanvas" aria-label="Google Books e-book viewer"></div>
+            <p class="viewer_message" id="viewer_message"></p>
+        </div>
+    </div>
+
+    <div class="borrow_modal" id="borrow_modal" aria-hidden="true">
+        <div class="borrow_modal_content" role="dialog" aria-modal="true" aria-labelledby="borrow_modal_title">
+            <div class="modal_header borrow_header">
+                <h3 id="borrow_modal_title">Borrow Book</h3>
+                <button class="borrow_modal_close" type="button" aria-label="Close borrow form">&times;</button>
+            </div>
+
+            <div class="borrow_summary">
+                <p><strong>Title:</strong> <span id="borrow_book_title"></span></p>
+                <p><strong>Author:</strong> <span id="borrow_book_author"></span></p>
+            </div>
+
+            <form id="borrow_form" class="borrow_form">
+                <div class="form_group">
+                    <label for="borrower_name">Borrower's full name</label>
+                    <input id="borrower_name" name="borrower_name" type="text" placeholder="Enter full name" required>
+                </div>
+
+                <div class="form_group">
+                    <label for="borrower_email">Email address</label>
+                    <input id="borrower_email" name="borrower_email" type="email" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form_group">
+                    <label for="borrow_due_date">Due date</label>
+                    <input id="borrow_due_date" name="borrow_due_date" type="date" required>
+                </div>
+
+                <div class="borrow_modal_actions">
+                    <button type="button" class="cancel_btn">Cancel</button>
+                    <button type="submit" class="confirm_btn">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

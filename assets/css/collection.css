@@ -1,0 +1,41 @@
+/* collection.css — load AFTER gen.css */
+body { overflow: auto;}
+.container { padding: 1.5rem 2rem; }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-bottom: .75rem; }
+.toolbar h2 { margin-right: auto; font-family: "Montserrat Alternates", sans-serif; }
+.toolbar input, .toolbar select, .modal_box input, .modal_box select {
+    padding: .55rem .8rem; border: 1px solid #7D6B5A; border-radius: 8px;
+    background: #fff; font: inherit; color: #1E130A;
+}
+.toolbar input[type="search"] { min-width: 18rem; }
+.books_message { color: #7D6B5A; font-size: .85rem; text-align: center; }
+
+.primary_btn, .secondary_btn, .row_btn { cursor: pointer; border-radius: 8px; border: 0; font: inherit; font-weight: 700; }
+.primary_btn   { padding: .55rem 1.1rem; background: #3E2C1B; color: #FDF2E9; }
+.secondary_btn { padding: .55rem 1.1rem; background: #e7ddd2; color: #1E130A; }
+.primary_btn:disabled { opacity: .6; cursor: wait; }
+
+.table_scroll { max-height: calc(100vh - 14rem); overflow: auto; border: 1px solid #7D6B5A; border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { padding: .7rem .9rem; text-align: left; border-bottom: 1px solid #d9c8b8; }
+th { position: sticky; top: 0; background: #3E2C1B; color: #FDF2E9; font-size: .8rem; text-transform: uppercase; white-space: nowrap; }
+tbody tr:hover { background: #f1e2d3; }
+.status_available { color: #2f6b3a; font-weight: 800; }
+.status_borrowed  { color: #7D3F28; font-weight: 800; }
+.row_actions { white-space: nowrap; }
+.book_cover_thumbnail { display: block; width: 3rem; height: 4rem; object-fit: cover; border-radius: 4px; }
+.row_btn { padding: .3rem .8rem; margin-right: .3rem; font-size: .8rem; }
+.edit_btn { background: #d9c8b8; color: #1E130A; }
+.delete_btn { background: #7D3F28; color: #FDF2E9; }
+
+.modal_overlay { display: none; position: fixed; inset: 0; z-index: 30; padding: 2rem;
+    background: rgba(22, 16, 10, .82); align-items: center; justify-content: center; }
+.modal_overlay.is_open { display: flex; }
+.modal_box { width: min(100%, 480px); background: #FDF2E9; border-radius: 12px; padding: 1.5rem; }
+.modal_top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.modal_x { background: none; border: 0; font-size: 1.8rem; cursor: pointer; color: #3E2C1B; }
+#book_form { display: flex; flex-direction: column; gap: .75rem; }
+.cover_image_help { color: #7D6B5A; font-size: .8rem; }
+.form_errors { color: #a12d1a; font-size: .85rem; white-space: pre-line; }
+.modal_footer { display: flex; justify-content: flex-end; gap: .75rem; }

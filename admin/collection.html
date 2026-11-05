@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TLC LibSys — Collection</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../assets/css/Admin.css">
+    <link rel="stylesheet" href="../assets/css/collection.css">
+    <script src="../assets/js/admin/collection.js" defer></script>
+</head>
+<body>
+    <header>
+        <h3>TLC LibSys</h3>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="collection.html">Collection</a>
+            <a href="borrowers.html">Borrowers</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="toolbar">
+            <h2>Book Collection</h2>
+            <input type="search" id="book_search" placeholder="Search title, author, ISBN, category...">
+            <select id="status_filter" aria-label="Filter by status">
+                <option value="all">All statuses</option>
+                <option value="Available">Available</option>
+                <option value="Borrowed">Borrowed</option>
+            </select>
+            <button type="button" id="open_add_book" class="primary_btn">+ Add Book</button>
+        </div>
+
+
+        <div class="table_scroll">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cover</th><th>ISBN</th><th>Title</th><th>Author</th><th>Year</th><th>Category</th>
+                        <th>Format</th><th>Status</th><th>Borrower</th><th>Due Date</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="books_table_body">
+                    <tr id="books_message_row">
+                        <td id="books_message" class="books_message" colspan="11" aria-live="polite"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Add / Edit modal (one form used for both) -->
+    <div class="modal_overlay" id="book_form_modal">
+        <div class="modal_box">
+            <div class="modal_top">
+                <h2 id="book_form_title">Add New Book</h2>
+                <button type="button" id="close_book_form" class="modal_x" aria-label="Close">&times;</button>
+            </div>
+
+            <form id="book_form">
+                <input type="hidden" name="book_id">
+                <input type="text" name="title" placeholder="Title" required>
+                <input type="text" name="author" placeholder="Author" required>
+                <input type="text" name="isbn" placeholder="ISBN (optional, 10 or 13 digits)" inputmode="numeric" pattern="[0-9]*" maxlength="13" minlength="10">
+                <input type="number" name="publication_year" placeholder="Year" min="1000" max="2100" required>
+                <select name="category" required>
+                    <option value="" disabled selected>Select a category</option>
+                    <option>Generalities</option>
+                    <option>Fiction</option>
+                    <option>Non-Fiction</option>
+                    <option>Philosophy &amp; Psychology</option>
+                    <option>Religion</option>
+                    <option>Social Sciences</option>
+                    <option>Language</option>
+                    <option>Natural Sciences &amp; Mathematics</option>
+                    <option>Technology</option>
+                    <option>Arts &amp; Recreation</option>
+                    <option>Literature</option>
+                    <option>History, Biography &amp; Geography</option>
+                </select>
+                <select name="format" required>
+                    <option value="Physical">Physical</option>
+                    <option value="E-Book">E-Book</option>
+                </select>
+                <label for="cover_image">Cover image (optional)</label>
+                <input type="file" id="cover_image" name="cover_image" accept="image/jpeg,image/png,image/webp">
+                <small class="cover_image_help">JPG, PNG, or WebP up to 5 MB. Leave empty when editing to keep the current cover.</small>
+
+                <p id="book_form_errors" class="form_errors"></p>
+
+                <div class="modal_footer">
+                    <button type="button" id="cancel_book_form" class="secondary_btn">Cancel</button>
+                    <button type="submit" id="save_book_button" class="primary_btn">Add Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

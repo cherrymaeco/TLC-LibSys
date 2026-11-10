@@ -9,9 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="../assets/css/Admin.css">
-    <link rel="stylesheet" href="../assets/css/collection.css">
-    <script src="../assets/js/admin/collection.js" defer></script>
+    <link rel="stylesheet" href="../assets/css/adminstyle.css">
+    <link rel="stylesheet" href="../assets/css/Collection.css">
+    <script src="../assets/js/admin/collection.js?v=20261109-1" defer></script>
 </head>
 <body>
     <header>
@@ -32,6 +32,10 @@
                 <option value="Available">Available</option>
                 <option value="Borrowed">Borrowed</option>
             </select>
+            <select id="archive_view" aria-label="Show active or archived books">
+                <option value="active">Active books</option>
+                <option value="archived">Archived books</option>
+            </select>
             <button type="button" id="open_add_book" class="primary_btn">+ Add Book</button>
         </div>
 
@@ -41,7 +45,7 @@
                 <thead>
                     <tr>
                         <th>Cover</th><th>ISBN</th><th>Title</th><th>Author</th><th>Year</th><th>Category</th>
-                        <th>Format</th><th>Status</th><th>Borrower</th><th>Due Date</th><th>Actions</th>
+                        <th>Format</th><th>Status</th><th>Available</th><th>Total copies</th><th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="books_table_body">
@@ -86,6 +90,7 @@
                     <option value="Physical">Physical</option>
                     <option value="E-Book">E-Book</option>
                 </select>
+                <input type="number" id="copies_total" name="copies_total" placeholder="Total Copies" min="1" max="999" required>
                 <label for="cover_image">Cover image (optional)</label>
                 <input type="file" id="cover_image" name="cover_image" accept="image/jpeg,image/png,image/webp">
                 <small class="cover_image_help">JPG, PNG, or WebP up to 5 MB. Leave empty when editing to keep the current cover.</small>

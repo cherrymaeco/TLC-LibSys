@@ -9,9 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inspiration&family=M+PLUS+1p&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Pontano+Sans:wght@300&display=swap"
         rel="stylesheet">
-    <script src="https://www.google.com/books/jsapi.js"></script>
 
     <link rel="stylesheet" href="../assets/css/user.css">
+    <link rel="stylesheet" href="../assets/css/user_extra.css">
+    <script src="../assets/js/user/library_client.js" defer></script>
     <script src="../assets/js/user/current_book_records.js" defer></script>
 </head>
 <body>
@@ -43,30 +44,31 @@
 
         <nav class="sidebar">
             <label for="">LISTS</label>
-            <span class="sidebar_item sidebar_item--active">Current Books</span>
-            <span class="sidebar_item" aria-disabled="true">Waitlist</span>
-            <span class="sidebar_item" aria-disabled="true">Want to Read</span>
-            <span class="sidebar_item" aria-disabled="true">Favorites</span>
+            <span class="sidebar_item sidebar_item--active" data-list="current" role="button" tabindex="0">Current Books</span>
+            <span class="sidebar_item" data-list="waitlist" role="button" tabindex="0">Waitlist</span>
+            <!-- set as comment first for future add-on features
+             <span class="sidebar_item" aria-disabled="true">Want to Read</span>
+            <span class="sidebar_item" aria-disabled="true">Favorites</span> -->
         </nav>
 
         <div class="content">
             <div id="my_books_header_text">
-                <h2>Current Borrowed Books</h2>
+                <h2 id="list_title">Current Books</h2>
                 <hr>
-                <p>All books currently borrowed from the library.</p>
+                <p id="list_description"></p>
             </div>
 
             <p id="my_books_message" class="my_books_message"></p>
 
-            <div id="my_books_table_wrap">
+            <div id="my_books_table_wrap" hidden>
                 <div class="table_tools">
-                    <label class="table_search_box" aria-label="Search books in current loans">
+                    <label class="table_search_box" aria-label="Search this list">
                         <span class="search_icon">⌕</span>
-                        <input type="search" placeholder="Search current books...">
+                        <input type="search" id="my_books_search" placeholder="Search by title or author...">
                     </label>
-                    <label class="filter_control">
+                    <label class="filter_control" id="my_books_filter_control">
                         <span>Filter</span>
-                        <select aria-label="Filter current books">
+                        <select id="my_books_filter" aria-label="Filter current books">
                             <option value="all">All books</option>
                             <option value="due-soon">Due soon</option>
                             <option value="overdue">Overdue</option>
@@ -75,14 +77,7 @@
                 </div>
 
                 <table id="my_books_table">
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Due Date</th>
-                            <th>Borrow Date</th>
-                        </tr>
-                    </thead>
+                    <thead><tr id="my_books_head_row"></tr></thead>
                     <tbody id="my_books_body"></tbody>
                 </table>
             </div>

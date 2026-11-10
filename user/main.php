@@ -17,12 +17,13 @@ if (isset($_SESSION['first_name']) && is_string($_SESSION['first_name'])) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inspiration&family=M+PLUS+1p&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Pontano+Sans:wght@300&display=swap"
         rel="stylesheet">
-    <script src="https://www.google.com/books/jsapi.js"></script>
+    <!-- E-BOOKS (disabled for now): re-add <script src="https://www.google.com/books/jsapi.js"></script> when e-book previews return -->
 
     <link rel="stylesheet" href="../assets/css/user.css">
-    <script src="../assets/js/user/book_details_modal.js" defer></script>
-    <script src="../assets/js/user/current_book_records.js" defer></script>
-    <script src="../assets/js/user/book_borrow_modal.js" defer></script>
+    <script src="../assets/js/user/library_client.js?v=20261108-1" defer></script>
+    <script src="../assets/js/user/browse_catalog.js?v=20261108-1" defer></script>
+    <script src="../assets/js/user/book_details_modal.js?v=20261108-1" defer></script>
+    <script src="../assets/js/user/book_borrow_modal.js?v=20261108-1" defer></script>
 </head>
 
 <body>
@@ -64,207 +65,12 @@ if (isset($_SESSION['first_name']) && is_string($_SESSION['first_name'])) {
             <hr>
             <p>Discover our extensive collection of books across various genres.</p>
         </div>
-        <div id="browse_books_container">
-            <div class="book_card">
-                <img src="../assets/imgs/book1.jpg" alt="" class="book_img">
-                <div class="book_info">
-                    <h3>The Lessons of History</h3>
-                    <p>Author: <span>Ariel Durant and Will Durant</span></p>
-                    <p>Year: <span>1968 </span></p>
-                    <p>Genre: <span>History</span></p>
-                    <p>Status: <span id="book_status">Available</span></p>
-                    <div class="flex">
-                        <p>Pages: <span>117</span></p>
-                        <p>Format: <span>E-Book</span></p>
-                    </div>
-                    <div class="book_actions">
-                        <button class="details_button" type="button" id="book1">Details</button>
-                        <button>Borrow</button>
-                    </div>
-                </div>
-            </div>
-            <div class="book_card">
-                <img src="../assets/imgs/book2.jpg" alt="" class="book_img">
-                <div class="book_info">
-                    <h3>The Merriam-Webster Dictionary</h3>
-                    <p>Author: <span>Merriam-Webster</span></p>
-                    <p>Year: <span>2020</span></p>
-                    <p>Genre: <span>Reference</span></p>
-                    <p>Status: <span id="book_status">Available</span></p>
-                    <div class="flex">
-                        <p>Pages: <span>320</span></p>
-                        <p>Format: <span>Physical</span></p>
-                    </div>
-                    <div class="book_actions">
-                        <button class="details_button" type="button" id="book2">Details</button>
-                        <button>Borrow</button>
-                    </div>
-                </div>
-            </div>
-            <div class="book_card">
-                <img src="../assets/imgs/book3.jpg" alt="" class="book_img">
-                <div class="book_info">
-                    <h3>Merriam-Webster's Collegiate Dictionary (Twelfth Edition)</h3>
-                    <p>Author: <span>Merriam-Webster</span></p>
-                    <p>Year: <span>2025</span></p>
-                    <p>Genre: <span>Reference</span></p>
-                    <p>Status: <span>Available</span></p>
-                    <div class="flex">
-                        <p>Pages: <span>320</span></p>
-                        <p>Format: <span>Physical</span></p>
-                    </div>
-                    <div class="book_actions">
-                        <button class="details_button" type="button" id="book3">Details</button>
-                        <button>Borrow</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="book_card">
-                <img src="../assets/imgs/book4.jpg" alt="" class="book_img">
-                <div class="book_info">
-                    <h3>The Structure of Scientific Revolutions</h3>
-                    <p>Author: <span>Thomas S. Kuhn </span></p>
-                    <p>Year: <span>2012</span></p>
-                    <p>Genre: <span>Science</span></p>
-                    <p>Status: <span>Available</span></p>
-                    <div class="flex">
-                        <p>Pages: <span>320</span></p>
-                        <p>Format: <span>E-Book</span></p>
-                    </div>
-                    <div class="book_actions">
-                        <button class="details_button" type="button" id="book4">Details</button>
-                        <button>Borrow</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="book_card">
-                <img src="../assets/imgs/book5.jpg" alt="" class="book_img">
-                <div class="book_info">
-                    <h3>The Well-Educated Mind</h3>
-                    <p>Author: <span>Susan Wise Bauer </span></p>
-                    <p>Year: <span>2015</span></p>
-                    <p>Genre: <span>General</span></p>
-                    <p>Status: <span>Available</span></p>
-                    <div class="flex">
-                        <p>Pages: <span>480</span></p>
-                        <p>Format: <span>E-Book</span></p>
-                    </div>
-                    <div class="book_actions">
-                        <button class="details_button" type="button" id="book5">Details</button>
-                        <button>Borrow</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="book_card">
-                <img src="../assets/imgs/book6.jpg" alt="" class="book_img">
-                <div class="book_info">
-                    <h3>Understanding Life Through Science for Grade 1</h3>
-                    <p>Author: <span>Wilma Lyn N. Aldon, Javiez & Torres, PhD</span></p>
-                    <p>Year: <span>2015</span></p>
-                    <p>Genre: <span>Science</span></p>
-                    <p>Status: <span>Available</span></p>
-                    <div class="flex">
-                        <p>Pages: <span>150</span></p>
-                        <p>Format: <span>Physical</span></p>
-                    </div>
-                    <div class="book_actions">
-                        <button class="details_button" type="button" id="book6">Details</button>
-                        <button>Borrow</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="book_card">
-                <img src="../assets/imgs/book7.jpg" alt="" class="book_img">
-                <div class="book_info">
-                    <h3>Cora Cooks Pancit</h3>
-                    <p>Author: <span>Dorina K. Lazo Gilmore</span></p>
-                    <p>Year: <span>2009</span></p>
-                    <p>Genre: <span>Fiction</span></p>
-                    <p>Status: <span>Available</span></p>
-                    <div class="flex">
-                        <p>Pages: <span>32</span></p>
-                        <p>Format: <span>Physical</span></p>
-                    </div>
-                    <div class="book_actions">
-                        <button class="details_button" type="button" id="book7">Details</button>
-                        <button>Borrow</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="book_card">
-                <img src="../assets/imgs/book8.jpg" alt="" class="book_img">
-                <div class="book_info">
-                    <h3>The Tale of Benjamin Bunny</h3>
-                    <p>Author: <span>Beatrix Potter</span></p>
-                    <p>Year: <span>2020</span></p>
-                    <p>Genre: <span>Fiction</span></p>
-                    <p>Status: <span>Available</span></p>
-                    <div class="flex">
-                        <p>Pages: <span>320</span></p>
-                        <p>Format: <span>E-Book</span></p>
-                    </div>
-                    <div class="book_actions">
-                        <button class="details_button" type="button" id="book8">Details</button>
-                        <button>Borrow</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="book_card">
-                <img src="../assets/imgs/book9.jpg" alt="" class="book_img">
-                <div class="book_info">
-                    <h3>The Tainted Cup</h3>
-                    <p>Author: <span>Robert Jackson Bennet</span></p>
-                    <p>Year: <span>2025</span></p>
-                    <p>Genre: <span>Fantasy</span></p>
-                    <p>Status: <span>Available</span></p>
-                    <div class="flex">
-                        <p>Pages: <span>320</span></p>
-                        <p>Format: <span>Physical</span></p>
-                    </div>
-                    <div class="book_actions">
-                        <button class="details_button" type="button" id="book9">Details</button>
-                        <button>Borrow</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="book_card">
-                <img src="../assets/imgs/book10.jpg" alt="" class="book_img">
-                <div class="book_info">
-                    <h3>Discovering the World of Geography, Grades 7 - 8</h3>
-                    <p>Author: <span>Myrl Shireman </span></p>
-                    <p>Year: <span>2008</span></p>
-                    <p>Genre: <span>Geography</span></p>
-                    <p>Status: <span>Available</span></p>
-                    <div class="flex">
-                        <p>Pages: <span>320</span></p>
-                        <p>Format: <span>E-Book</span></p>
-                    </div>
-                    <div class="book_actions">
-                        <button class="details_button" type="button" id="book10">Details</button>
-                        <button>Borrow</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="browse_books_container"></div>
+        <p id="catalog_message" class="catalog_message"></p>
     </div>
 
     <!-- ========== Book Browsing Pagination =========== -->
-    <div class="book_pagination" aria-label="Book browsing pagination">
-        <button type="button" class="page_btn page_prev" aria-label="Previous page">Previous</button>
-        <div class="page_numbers" aria-label="Page numbers">
-            <button type="button" class="page_number active" aria-label="Page 1">1</button>
-            <button type="button" class="page_number" aria-label="Page 2">2</button>
-            <button type="button" class="page_number" aria-label="Page 3">3</button>
-        </div>
-        <button type="button" class="page_btn page_next" aria-label="Next page">Next</button>
-    </div>
+    <div class="book_pagination" id="book_pagination" aria-label="Book browsing pagination"></div>
 
     <!-- ========== About Section =========== -->
     <div class="section" id="about">
@@ -302,24 +108,23 @@ if (isset($_SESSION['first_name']) && is_string($_SESSION['first_name'])) {
         <div class="book_modal_content" role="dialog" aria-modal="true" aria-labelledby="modal_book_title">
             <div class="modal_header">
                 <h3>Book Details</h3>
-                <button class="modal_close" type="button" aria-label="Close book viewer">&times;</button>
+                <button class="modal_close" type="button" aria-label="Close book details">&times;</button>
             </div>
             <div class="modal_book_details">
                 <h2 id="modal_book_title">Book details</h2>
                 <p id="modal_book_author"></p>
                 <p id="published"></p>
-                <p id="publisher"></p>
                 <p id="genre"></p>
-                <p id="language"></p>
-                <p id="page_count"></p>
-                <p id="modal_book_description"></p>
-                <a id="google_books_link" href="#" target="_blank" rel="noopener">Open on Google Books</a>
+                <p id="modal_book_isbn"></p>
+                <p id="modal_book_copies"></p>
+                <a id="google_books_link" href="#" target="_blank" rel="noopener">Search on Google Books</a>
             </div>
-            <div id="viewerCanvas" aria-label="Google Books e-book viewer"></div>
-            <p class="viewer_message" id="viewer_message"></p>
+            <!-- Shows the book's cover image (JS fills this in) -->
+            <div id="viewerCanvas" aria-label="Book cover"></div>
         </div>
     </div>
 
+    <!-- ======= Borrow modal: the student's name/email come from their login ======= -->
     <div class="borrow_modal" id="borrow_modal" aria-hidden="true">
         <div class="borrow_modal_content" role="dialog" aria-modal="true" aria-labelledby="borrow_modal_title">
             <div class="modal_header borrow_header">
@@ -330,27 +135,16 @@ if (isset($_SESSION['first_name']) && is_string($_SESSION['first_name'])) {
             <div class="borrow_summary">
                 <p><strong>Title:</strong> <span id="borrow_book_title"></span></p>
                 <p><strong>Author:</strong> <span id="borrow_book_author"></span></p>
+                <p><strong>Borrower:</strong> <span id="borrow_borrower_name"></span></p>
+                <p><strong>Email:</strong> <span id="borrow_borrower_email"></span></p>
             </div>
 
+            <p class="borrow_terms" id="borrow_terms"></p>
+
             <form id="borrow_form" class="borrow_form">
-                <div class="form_group">
-                    <label for="borrower_name">Borrower's full name</label>
-                    <input id="borrower_name" name="borrower_name" type="text" placeholder="Enter full name" required>
-                </div>
-
-                <div class="form_group">
-                    <label for="borrower_email">Email address</label>
-                    <input id="borrower_email" name="borrower_email" type="email" placeholder="you@example.com" required>
-                </div>
-
-                <div class="form_group">
-                    <label for="borrow_due_date">Due date</label>
-                    <input id="borrow_due_date" name="borrow_due_date" type="date" required>
-                </div>
-
                 <div class="borrow_modal_actions">
                     <button type="button" class="cancel_btn">Cancel</button>
-                    <button type="submit" class="confirm_btn">Confirm</button>
+                    <button type="submit" class="confirm_btn">Reserve Book</button>
                 </div>
             </form>
         </div>

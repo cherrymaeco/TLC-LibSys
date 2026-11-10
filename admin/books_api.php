@@ -1,6 +1,5 @@
 <?php
-// admin/books_api.php
-require __DIR__ . '/../config/db.php'; // Make sure your db.php is in config/
+require __DIR__ . '/../config/db.php'; 
 session_start(); // Start session BEFORE any output
 
 header('Content-Type: application/json; charset=utf-8');
@@ -116,6 +115,11 @@ function validateBookInput(array $rawInput): array
     $isbn     = preg_replace('/[\s-]/', '', (string) ($rawInput['isbn'] ?? ''));
     $year     = filter_var($rawInput['publication_year'] ?? null, FILTER_VALIDATE_INT);
 
+    $copiesTotal = filter_var($rawInput['copies_total'] ?? 1, FILTER_VALIDATE_INT);
+    if ($copiesTotal === false || $copiesTotal < 1 || $copiesTotal > 999) {
+        $errors[] = 'Copies must be a number from 1 to 999.';
+    }
+
     if ($title === '')  { $errors[] = 'Title is required.'; }
     if ($author === '') { $errors[] = 'Author is required.'; }
     if ($year === false || $year < 1000 || $year > $currentYear) {
@@ -134,6 +138,7 @@ function validateBookInput(array $rawInput): array
         'publication_year' => $year,
         'category'         => $category,
         'format'           => $format,
+        'copies_total'     => $copiesTotal,
     ];
     return [$cleanedBook, $errors];
 }
@@ -152,10 +157,27 @@ function bookExists(PDO $pdo, int $bookId): bool
     return (bool) $statement->fetchColumn();
 }
 
+function bookIsArchived(PDO $pdo, int $bookId): bool
+{
+    $statement = $pdo->prepare('SELECT 1 FROM books WHERE book_id = ? AND archived_at IS NOT NULL');
+    $statement->execute([$bookId]);
+    return (bool) $statement->fetchColumn();
+}
+
+/** Students still in line for this title. */
+function bookHasWaitingStudents(PDO $pdo, int $bookId): bool
+{
+    $statement = $pdo->prepare(
+        'SELECT 1 FROM waitlist WHERE book_id = ? AND fulfilled_at IS NULL AND cancelled_at IS NULL LIMIT 1'
+    );
+    $statement->execute([$bookId]);
+    return (bool) $statement->fetchColumn();
+}
+
 function handleDuplicateIsbn(PDOException $exception): void
 {
     if ($exception->getCode() === '23000') {
-        sendJson(['ok' => false, 'errors' => ['A book with that ISBN already exists.']], 409);
+        sendJson(['ok' => false, 'errors' => ['A book with that ISBN already exists (it may be in the archive).']], 409);
     }
     throw $exception;
 }
@@ -165,15 +187,22 @@ $requestMethod = $_POST['_method'] ?? $_SERVER['REQUEST_METHOD'];
 try {
     // ---------- READ ----------
     if ($requestMethod === 'GET') {
+        // ?archived=1 shows the archive (admin only). Default shows active books.
+        $showArchived = ($_GET['archived'] ?? '') === '1';
+        if ($showArchived) {
+            requireAdmin($pdo);
+        }
+        $archiveFilter = $showArchived ? 'b.archived_at IS NOT NULL' : 'b.archived_at IS NULL';
         $listQuery = "
             SELECT b.book_id, b.isbn, b.title, b.author, b.publication_year,
-                   b.category, b.format, b.cover_image,
-                   IF(l.loan_id IS NULL, 'Available', 'Borrowed') AS status,
-                   CONCAT(u.first_name, ' ', u.last_name)         AS borrower_name,
-                   l.due_date
+                b.category, b.format, b.cover_image, b.copies_total, b.archived_at,
+                COUNT(l.loan_id)                      AS copies_borrowed,
+                b.copies_total - COUNT(l.loan_id)     AS copies_available,
+                IF(b.copies_total - COUNT(l.loan_id) > 0, 'Available', 'Borrowed') AS status
             FROM books b
             LEFT JOIN loans l ON l.book_id = b.book_id AND l.returned_at IS NULL
-            LEFT JOIN users u ON u.user_id = l.user_id
+            WHERE $archiveFilter
+            GROUP BY b.book_id
             ORDER BY b.title ASC";
         sendJson(['ok' => true, 'books' => $pdo->query($listQuery)->fetchAll()]);
     }
@@ -190,8 +219,8 @@ try {
         $newBook['cover_image'] = saveCoverImage(null);
         try {
             $insertStatement = $pdo->prepare(
-                'INSERT INTO books (isbn, title, author, publication_year, category, format, cover_image)
-                 VALUES (:isbn, :title, :author, :publication_year, :category, :format, :cover_image)'
+                'INSERT INTO books (isbn, title, author, publication_year, category, format, copies_total, cover_image)
+                 VALUES (:isbn, :title, :author, :publication_year, :category, :format, :copies_total, :cover_image)'
             );
             $insertStatement->execute($newBook);
         } catch (PDOException $exception) {
@@ -210,9 +239,24 @@ try {
         if (!$bookId || !bookExists($pdo, $bookId)) {
             sendJson(['ok' => false, 'errors' => ['Book not found.']], 404);
         }
+        // Restore a book from the archive: PUT { book_id, action: "restore" }
+        if (($requestBody['action'] ?? '') === 'restore') {
+            $pdo->prepare('UPDATE books SET archived_at = NULL WHERE book_id = ?')->execute([$bookId]);
+            sendJson(['ok' => true]);
+        }
+        if (bookIsArchived($pdo, $bookId)) {
+            sendJson(['ok' => false, 'errors' => ['This book is archived. Restore it before editing.']], 409);
+        }
         [$updatedBook, $validationErrors] = validateBookInput($requestBody);
         if ($validationErrors) {
             sendJson(['ok' => false, 'errors' => $validationErrors], 422);
+        }
+        $borrowedCountStatement = $pdo->prepare(
+            'SELECT COUNT(*) FROM loans WHERE book_id = ? AND returned_at IS NULL'
+        );
+        $borrowedCountStatement->execute([$bookId]);
+        if ($updatedBook['copies_total'] < (int) $borrowedCountStatement->fetchColumn()) {
+            sendJson(['ok' => false, 'errors' => ['Copies cannot be fewer than the number currently borrowed.']], 422);
         }
         $existingImageQuery = $pdo->prepare('SELECT cover_image FROM books WHERE book_id = ?');
         $existingImageQuery->execute([$bookId]);
@@ -223,6 +267,7 @@ try {
             $updateStatement = $pdo->prepare(
                 'UPDATE books SET isbn = :isbn, title = :title, author = :author,
                         publication_year = :publication_year, category = :category, format = :format,
+                        copies_total = :copies_total,
                         cover_image = :cover_image
                  WHERE book_id = :book_id'
             );
@@ -244,20 +289,23 @@ try {
         sendJson(['ok' => true]);
     }
 
-    // ---------- DELETE ----------
+    // ---------- ARCHIVE (the old "delete") ----------
+    // The row stays in the database so loan history keeps working and the book can be restored.
     if ($requestMethod === 'DELETE') {
         $bookId = (int) ($requestBody['book_id'] ?? 0);
         if (!$bookId || !bookExists($pdo, $bookId)) {
             sendJson(['ok' => false, 'errors' => ['Book not found.']], 404);
         }
-        if (bookHasActiveLoan($pdo, $bookId)) {
-            sendJson(['ok' => false, 'errors' => ['This book is currently borrowed and cannot be deleted.']], 409);
+        if (bookIsArchived($pdo, $bookId)) {
+            sendJson(['ok' => false, 'errors' => ['This book is already archived.']], 409);
         }
-        $coverQuery = $pdo->prepare('SELECT cover_image FROM books WHERE book_id = ?');
-        $coverQuery->execute([$bookId]);
-        $coverImage = $coverQuery->fetchColumn() ?: null;
-        $pdo->prepare('DELETE FROM books WHERE book_id = ?')->execute([$bookId]);
-        removeCoverImage($coverImage);
+        if (bookHasActiveLoan($pdo, $bookId)) {   // covers reserved AND borrowed copies
+            sendJson(['ok' => false, 'errors' => ['A copy of this book is reserved or borrowed. Archive it after all copies are back.']], 409);
+        }
+        if (bookHasWaitingStudents($pdo, $bookId)) {
+            sendJson(['ok' => false, 'errors' => ['Students are on the waitlist for this book, so it cannot be archived yet.']], 409);
+        }
+        $pdo->prepare('UPDATE books SET archived_at = NOW() WHERE book_id = ?')->execute([$bookId]);
         sendJson(['ok' => true]);
     }
 

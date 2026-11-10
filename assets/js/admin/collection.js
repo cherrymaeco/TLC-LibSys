@@ -6,6 +6,7 @@ const booksMessage       = document.getElementById('books_message');
 const booksMessageRow    = document.getElementById('books_message_row');
 const searchInput        = document.getElementById('book_search');
 const statusFilterSelect = document.getElementById('status_filter');
+const archiveViewSelect  = document.getElementById('archive_view');
 const openAddButton      = document.getElementById('open_add_book');
 
 const bookModalElement   = document.getElementById('book_form_modal');
@@ -15,12 +16,16 @@ const bookFormErrors     = document.getElementById('book_form_errors');
 const cancelFormButton   = document.getElementById('cancel_book_form');
 const closeFormButton    = document.getElementById('close_book_form');
 const saveFormButton     = document.getElementById('save_book_button');
+const copiesTotalInput   = document.getElementById('copies_total');
 
 let allBooks = [];   // the latest list from the server
 
 // ---------- talking to the server ----------
-async function callBooksApi(method, bodyObject) {
-    const requestOptions = { method: method, credentials: 'same-origin' };
+async function callBooksApi(method, bodyObject, archived) {
+    const url = method === 'GET' && archived === '1'
+        ? BOOKS_API_URL + '?archived=1'
+        : BOOKS_API_URL;
+    const requestOptions = { method: method, credentials: 'same-origin', cache: 'no-store' };
     if (bodyObject instanceof FormData) {
         requestOptions.body = bodyObject;
     } else if (bodyObject) {
@@ -28,7 +33,7 @@ async function callBooksApi(method, bodyObject) {
         requestOptions.body = JSON.stringify(bodyObject);
     }
 
-    const response = await fetch(BOOKS_API_URL, requestOptions);
+    const response = await fetch(url, requestOptions);
     console.log("API Response Status:", response.status); 
     let result;
     try {
@@ -48,7 +53,8 @@ async function callBooksApi(method, bodyObject) {
 async function loadBooks() {
     booksMessage.textContent = 'Loading...';
     try {
-        const result = await callBooksApi('GET');
+        const archived = archiveViewSelect.value === 'archived' ? '1' : '0';
+        const result = await callBooksApi('GET', null, archived);
         allBooks = result.books;
         renderBooks();
     } catch (error) {
@@ -59,7 +65,7 @@ async function loadBooks() {
 // ---------- drawing the table ----------
 function createCell(rowElement, text) {
     const cell = document.createElement('td');
-    cell.textContent = text || '—';   // textContent keeps user input safe from HTML injection
+    cell.textContent = text ?? '—';   // textContent keeps user input safe from HTML injection
     rowElement.appendChild(cell);
     return cell;
 }
@@ -108,13 +114,17 @@ function renderBooks() {
         createCell(rowElement, book.category);
         createCell(rowElement, book.format);
         createCell(rowElement, book.status).className = 'status_' + book.status.toLowerCase();
-        createCell(rowElement, book.borrower_name);
-        createCell(rowElement, book.due_date);
+        createCell(rowElement, book.copies_available);
+        createCell(rowElement, String(book.copies_total ?? '—'));
 
         const actionsCell = document.createElement('td');
         actionsCell.className = 'row_actions';
-        actionsCell.appendChild(createActionButton('Edit', 'edit_btn', () => openBookForm(book)));
-        actionsCell.appendChild(createActionButton('Delete', 'delete_btn', () => deleteBook(book)));
+        if (archiveViewSelect.value === 'archived') {
+            actionsCell.appendChild(createActionButton('Restore', 'edit_btn', () => restoreBook(book)));
+        } else {
+            actionsCell.appendChild(createActionButton('Edit', 'edit_btn', () => openBookForm(book)));
+            actionsCell.appendChild(createActionButton('Archive', 'delete_btn', () => deleteBook(book)));
+        }
         rowElement.appendChild(actionsCell);
 
         booksTableBody.appendChild(rowElement);
@@ -141,6 +151,7 @@ function openBookForm(bookToEdit) {
         bookFormElement.elements.publication_year.value = bookToEdit.publication_year;
         bookFormElement.elements.category.value         = bookToEdit.category;
         bookFormElement.elements.format.value           = bookToEdit.format;
+        copiesTotalInput.value = String(bookToEdit.copies_total ?? '');
     } else {
         bookModalTitle.textContent = 'Add New Book';
         saveFormButton.textContent = 'Add Book';
@@ -175,9 +186,19 @@ bookFormElement.addEventListener('submit', async (event) => {
 
 // ---------- delete ----------
 async function deleteBook(book) {
-    if (!confirm('Delete "' + book.title + '"? This cannot be undone.')) return;
+    if (!confirm('Archive "' + book.title + '"?')) return;
     try {
         await callBooksApi('DELETE', { book_id: book.book_id });
+        await loadBooks();
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+async function restoreBook(book) {
+    if (!confirm('Restore "' + book.title + '" to the active collection?')) return;
+    try {
+        await callBooksApi('PUT', { book_id: book.book_id, action: 'restore' });
         await loadBooks();
     } catch (error) {
         alert(error.message);
@@ -196,5 +217,6 @@ document.addEventListener('keydown', (event) => {
 });
 searchInput.addEventListener('input', renderBooks);
 statusFilterSelect.addEventListener('change', renderBooks);
+archiveViewSelect.addEventListener('change', loadBooks);
 
 loadBooks();

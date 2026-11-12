@@ -23,12 +23,19 @@
             description: 'When a copy is returned, the first student in line gets it reserved automatically.',
             columns: ['Title', 'Author', 'Joined On', 'Place in Line', 'Action'],
             emptyText: 'You are not on any waitlist.'
+        },
+        history: {
+            title: 'History',
+            description: 'Books you have borrowed in the past, newest first.',
+            columns: ['Title', 'Author', 'Borrowed On', 'Due Date', 'Closed On', 'Outcome'],
+            emptyText: 'Nothing here yet. Books you return will show up in your history.'
         }
     };
 
     let activeList = 'current';
     let myLoans = [];
     let myWaitlist = [];
+    let myHistory = [];
 
     async function loadMyBooks() {
         messageElement.textContent = 'Loading...';
@@ -37,6 +44,7 @@
             const result = await TLCLibrary.callLibraryApi('GET', { action: 'my_books' });
             myLoans = result.loans;
             myWaitlist = result.waitlist;
+            myHistory = result.history || [];
             render();
         } catch (error) {
             messageElement.textContent = error.httpStatus === 401
@@ -110,6 +118,37 @@
         return rowElement;
     }
 
+    // Turns how a loan ended into the words the student sees.
+    function describeOutcome(entry) {
+        if (entry.end_reason === 'cancelled') return { text: 'Reservation cancelled', className: 'status_cancelled' };
+        if (entry.end_reason === 'expired')   return { text: 'Reservation expired',   className: 'status_expired' };
+        if (entry.end_reason === 'lost')      return { text: 'Lost',                  className: 'status_overdue' };
+        const returnedLate = entry.returned_at.slice(0, 10) > entry.due_date;
+        return returnedLate
+            ? { text: 'Returned late', className: 'status_overdue' }
+            : { text: 'Returned',      className: 'status_returned' };
+    }
+
+    function renderHistoryRow(entry) {
+        const rowElement = document.createElement('tr');
+        const outcome = describeOutcome(entry);
+        addCell(rowElement, entry.title);
+        addCell(rowElement, entry.author);
+        addCell(rowElement, entry.picked_up_at ? TLCLibrary.formatDate(entry.picked_up_at) : '—');   // never picked up = never borrowed
+        addCell(rowElement, entry.picked_up_at ? TLCLibrary.formatDate(entry.due_date) : '—');
+        addCell(rowElement, TLCLibrary.formatDate(entry.returned_at));
+        addCell(rowElement, outcome.text, outcome.className);
+        return rowElement;
+    }
+
+    function getRowElements() {
+        const searchText = searchInput.value.trim().toLowerCase();
+        const matchesSearch = (entry) => (entry.title + ' ' + entry.author).toLowerCase().includes(searchText);
+        if (activeList === 'current') return getVisibleLoans().map(renderLoanRow);
+        if (activeList === 'history') return myHistory.filter(matchesSearch).map(renderHistoryRow);
+        return myWaitlist.filter(matchesSearch).map(renderWaitlistRow);
+    }
+
     function render() {
         const settings = LIST_SETTINGS[activeList];
         listTitleElement.textContent = settings.title;
@@ -122,12 +161,7 @@
             return headerCell;
         }));
 
-        const searchText = searchInput.value.trim().toLowerCase();
-        const rowElements = activeList === 'current'
-            ? getVisibleLoans().map(renderLoanRow)
-            : myWaitlist
-                .filter((entry) => (entry.title + ' ' + entry.author).toLowerCase().includes(searchText))
-                .map(renderWaitlistRow);
+        const rowElements = getRowElements();
 
         bodyElement.replaceChildren(...rowElements);
         tableWrapElement.hidden = rowElements.length === 0;
@@ -168,6 +202,17 @@
     });
     searchInput.addEventListener('input', render);
     filterSelect.addEventListener('change', render);
+
+    // my_books.html#history opens the History list directly (the header "History" link uses this).
+    function applyHashToList() {
+        const listFromHash = location.hash.replace('#', '');
+        if (LIST_SETTINGS[listFromHash]) switchList(listFromHash);
+    }
+    window.addEventListener('hashchange', applyHashToList);
+    if (LIST_SETTINGS[location.hash.replace('#', '')]) {
+        activeList = location.hash.replace('#', '');
+        sidebarItems.forEach((item) => item.classList.toggle('sidebar_item--active', item.dataset.list === activeList));
+    }
 
     loadMyBooks();
 })();

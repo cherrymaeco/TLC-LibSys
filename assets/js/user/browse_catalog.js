@@ -52,6 +52,9 @@
     function createBookCard(book) {
         const cardElement = document.createElement('div');
         cardElement.className = 'book_card';
+        cardElement.dataset.bookId = book.book_id;
+        cardElement.tabIndex = 0;
+        cardElement.setAttribute('aria-label', 'View details for ' + book.title);
 
         const coverElement = document.createElement('img');
         coverElement.className = 'book_img';
@@ -81,12 +84,6 @@
         const actionsElement = document.createElement('div');
         actionsElement.className = 'book_actions';
 
-        const detailsButton = document.createElement('button');
-        detailsButton.type = 'button';
-        detailsButton.className = 'details_button';
-        detailsButton.dataset.bookId = book.book_id;
-        detailsButton.textContent = 'Details';
-
         const borrowState = getBorrowButtonState(book);
         const borrowButton = document.createElement('button');
         borrowButton.type = 'button';
@@ -95,7 +92,7 @@
         borrowButton.textContent = borrowState.label;
         borrowButton.disabled = borrowState.disabled;
 
-        actionsElement.append(detailsButton, borrowButton);
+        actionsElement.appendChild(borrowButton);
         infoElement.appendChild(actionsElement);
         cardElement.appendChild(infoElement);
         return cardElement;

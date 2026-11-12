@@ -1,16 +1,12 @@
 <?php
-// user/library_api.php — student-facing API: browse, borrow (reserve), waitlist, My Books.
-//   GET  ?action=catalog       books + this student's state for each + borrowing rules
-//   GET  ?action=my_books      this student's reserved/borrowed books and waitlist
-//   POST {action:"borrow", book_id}              reserve a copy, or join the waitlist if none free
-//   POST {action:"leave_waitlist", book_id}
-//   POST {action:"cancel_reservation", loan_id}  (only before pickup)
+// user/library_api.php — student-facing API: browse, borrow (reserve), waitlist
 
 require __DIR__ . '/../config/db.php';
 require __DIR__ . '/../config/library_lib.php';
 session_start();
 session_write_close();   // we only read the session; don't block other requests
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store');   // per-student data must never be cached or shared
 
 function handleCatalog(PDO $pdo): void
 {
@@ -23,7 +19,7 @@ function handleCatalog(PDO $pdo): void
 
     $books = $pdo->query("
         SELECT b.book_id, b.isbn, b.title, b.author, b.publication_year, b.category,
-               b.format, b.cover_image, b.copies_total,
+               b.format, b.cover_image, b.copies_total, b.description,
                GREATEST(0, b.copies_total - COUNT(l.loan_id)) AS copies_available,
                (SELECT COUNT(*) FROM waitlist w
                  WHERE w.book_id = b.book_id AND w.fulfilled_at IS NULL AND w.cancelled_at IS NULL) AS waitlist_count
@@ -69,6 +65,20 @@ function handleCatalog(PDO $pdo): void
     ]);
 }
 
+/** Who is signed in? Used by the profile menu on every student page. */
+function handleMe(PDO $pdo): void
+{
+    $viewer = fetchSessionUser($pdo);
+    sendJson([
+        'ok'     => true,
+        'viewer' => $viewer ? [
+            'name'  => $viewer['first_name'] . ' ' . $viewer['last_name'],
+            'email' => $viewer['school_email'],
+            'role'  => $viewer['role'],
+        ] : null,
+    ]);
+}
+
 function handleMyBooks(PDO $pdo): void
 {
     $student = requireStudent($pdo);
@@ -96,10 +106,21 @@ function handleMyBooks(PDO $pdo): void
     ");
     $waitlistStatement->execute([$student['user_id']]);
 
+    // History: everything that is finished (returned, cancelled, expired, lost), newest first.
+    $historyStatement = $pdo->prepare("
+        SELECT l.loan_id, b.title, b.author, l.borrowed_at AS reserved_at, l.picked_up_at,
+               l.due_date, l.returned_at, l.end_reason
+        FROM loans l JOIN books b ON b.book_id = l.book_id
+        WHERE l.user_id = ? AND l.returned_at IS NOT NULL
+        ORDER BY l.returned_at DESC
+    ");
+    $historyStatement->execute([$student['user_id']]);
+
     sendJson([
         'ok'       => true,
         'loans'    => $loanStatement->fetchAll(),
         'waitlist' => $waitlistStatement->fetchAll(),
+        'history'  => $historyStatement->fetchAll(),
     ]);
 }
 
@@ -208,6 +229,7 @@ try {
         $action = $_GET['action'] ?? 'catalog';
         if ($action === 'catalog') { handleCatalog($pdo); }
         if ($action === 'my_books') { handleMyBooks($pdo); }
+        if ($action === 'me') { handleMe($pdo); }
         failWith('Unknown action.', 400);
     }
 

@@ -1,5 +1,6 @@
-// collection.js — loads books from books_api.php and handles add / edit / delete.
+//Collection page: list, add, edit, archive/restore, view waitlist.
 const BOOKS_API_URL = 'books_api.php';
+const ADMIN_API_URL = 'admin_api.php';
 
 const booksTableBody     = document.getElementById('books_table_body');
 const booksMessage       = document.getElementById('books_message');
@@ -16,33 +17,39 @@ const bookFormErrors     = document.getElementById('book_form_errors');
 const cancelFormButton   = document.getElementById('cancel_book_form');
 const closeFormButton    = document.getElementById('close_book_form');
 const saveFormButton     = document.getElementById('save_book_button');
-const copiesTotalInput   = document.getElementById('copies_total');
+const coverFileInput     = document.getElementById('cover_image');
+const coverPreviewImage  = document.getElementById('cover_preview_image');
+const coverPreviewHolder = document.getElementById('cover_preview_placeholder');
+const coverPreviewCaption = document.getElementById('cover_preview_caption');
 
-let allBooks = [];   // the latest list from the server
+const waitlistModal      = document.getElementById('waitlist_modal');
+const waitlistTitle      = document.getElementById('waitlist_modal_title');
+const waitlistMessage    = document.getElementById('waitlist_modal_message');
+const waitlistBody       = document.getElementById('waitlist_modal_body');
+const closeWaitlistButton = document.getElementById('close_waitlist_modal');
+
+let allBooks = [];                 // latest list from the server
+let existingCoverUrl = '';         // cover of the book being edited (if any)
+let pendingPreviewUrl = '';        // object URL of a newly chosen file (revoked when replaced)
+
+const isArchiveView = () => archiveViewSelect.value === 'archived';
+const coverUrlFor = (coverPath) => (coverPath ? '../' + coverPath : '');   // pages live one folder deep
 
 // ---------- talking to the server ----------
-async function callBooksApi(method, bodyObject, archived) {
-    const url = method === 'GET' && archived === '1'
-        ? BOOKS_API_URL + '?archived=1'
-        : BOOKS_API_URL;
+async function callBooksApi(method, requestBody, queryString = '') {
     const requestOptions = { method: method, credentials: 'same-origin', cache: 'no-store' };
-    if (bodyObject instanceof FormData) {
-        requestOptions.body = bodyObject;
-    } else if (bodyObject) {
+    if (requestBody instanceof FormData) {
+        requestOptions.body = requestBody;                 // file upload: browser sets the headers
+    } else if (requestBody) {
         requestOptions.headers = { 'Content-Type': 'application/json' };
-        requestOptions.body = JSON.stringify(bodyObject);
+        requestOptions.body = JSON.stringify(requestBody);
     }
-
-    const response = await fetch(url, requestOptions);
-    console.log("API Response Status:", response.status); 
+    const response = await fetch(BOOKS_API_URL + queryString, requestOptions);
     let result;
     try {
         result = await response.json();
     } catch {
-        throw new Error('The server returned an invalid response.');
-    }
-    if (!response.ok && result.ok) {
-        throw new Error('The request failed with HTTP ' + response.status + '.');
+        throw new Error('The server returned an invalid response (HTTP ' + response.status + ').');
     }
     if (!result.ok) {
         throw new Error((result.errors || [result.error || 'Unknown error.']).join('\n'));
@@ -51,21 +58,25 @@ async function callBooksApi(method, bodyObject, archived) {
 }
 
 async function loadBooks() {
-    booksMessage.textContent = 'Loading...';
+    showMessage('Loading...');
     try {
-        const archived = archiveViewSelect.value === 'archived' ? '1' : '0';
-        const result = await callBooksApi('GET', null, archived);
+        const result = await callBooksApi('GET', null, isArchiveView() ? '?archived=1' : '');
         allBooks = result.books;
         renderBooks();
     } catch (error) {
-        booksMessage.textContent = 'Could not load books: ' + error.message;
+        showMessage('Could not load books: ' + error.message);
     }
 }
 
 // ---------- drawing the table ----------
+function showMessage(text) {
+    booksMessage.textContent = text;
+    booksTableBody.replaceChildren(booksMessageRow);
+}
+
 function createCell(rowElement, text) {
     const cell = document.createElement('td');
-    cell.textContent = text ?? '—';   // textContent keeps user input safe from HTML injection
+    cell.textContent = (text === null || text === undefined || text === '') ? '—' : text;   // textContent = safe
     rowElement.appendChild(cell);
     return cell;
 }
@@ -82,9 +93,8 @@ function createActionButton(label, className, onClick) {
 function getVisibleBooks() {
     const searchText = searchInput.value.trim().toLowerCase();
     const statusChoice = statusFilterSelect.value;
-
     return allBooks.filter((book) => {
-        const matchesStatus = statusChoice === 'all' || book.status === statusChoice;
+        const matchesStatus = isArchiveView() || statusChoice === 'all' || book.status === statusChoice;
         const searchableText = [book.title, book.author, book.isbn, book.category].join(' ').toLowerCase();
         return matchesStatus && searchableText.includes(searchText);
     });
@@ -92,70 +102,115 @@ function getVisibleBooks() {
 
 function renderBooks() {
     const visibleBooks = getVisibleBooks();
-    booksTableBody.replaceChildren(booksMessageRow);
+    if (!visibleBooks.length) {
+        showMessage(isArchiveView() ? 'No archived books.' : 'No books found.');
+        return;
+    }
+    booksTableBody.replaceChildren();
 
     visibleBooks.forEach((book) => {
         const rowElement = document.createElement('tr');
+
         const coverCell = document.createElement('td');
         if (book.cover_image) {
-            const coverImage = document.createElement('img');
-            coverImage.src = '../' + book.cover_image;
-            coverImage.alt = 'Cover of ' + book.title;
-            coverImage.className = 'book_cover_thumbnail';
-            coverCell.appendChild(coverImage);
+            const thumbElement = document.createElement('img');
+            thumbElement.className = 'cover_thumb';
+            thumbElement.src = coverUrlFor(book.cover_image);
+            thumbElement.alt = '';
+            coverCell.appendChild(thumbElement);
         } else {
             coverCell.textContent = '—';
         }
         rowElement.appendChild(coverCell);
+
         createCell(rowElement, book.isbn);
         createCell(rowElement, book.title);
         createCell(rowElement, book.author);
         createCell(rowElement, book.publication_year);
         createCell(rowElement, book.category);
-        createCell(rowElement, book.format);
-        createCell(rowElement, book.status).className = 'status_' + book.status.toLowerCase();
+        // Temporarily hidden until the format option is ready to be added back.
+        // createCell(rowElement, book.format);
+        createCell(rowElement, isArchiveView() ? 'Archived' : book.status).className =
+            'status_' + (isArchiveView() ? 'borrowed' : book.status.toLowerCase());
         createCell(rowElement, book.copies_available);
-        createCell(rowElement, String(book.copies_total ?? '—'));
+        createCell(rowElement, book.copies_total);
+
+        const waitlistCell = document.createElement('td');
+        if (Number(book.waitlist_count) > 0) {
+            waitlistCell.appendChild(createActionButton(book.waitlist_count + ' waiting', 'waitlist_link_btn', () => openWaitlistModal(book)));
+        } else {
+            waitlistCell.textContent = '—';
+        }
+        rowElement.appendChild(waitlistCell);
 
         const actionsCell = document.createElement('td');
         actionsCell.className = 'row_actions';
-        if (archiveViewSelect.value === 'archived') {
+        if (isArchiveView()) {
             actionsCell.appendChild(createActionButton('Restore', 'edit_btn', () => restoreBook(book)));
         } else {
             actionsCell.appendChild(createActionButton('Edit', 'edit_btn', () => openBookForm(book)));
-            actionsCell.appendChild(createActionButton('Archive', 'delete_btn', () => deleteBook(book)));
+            actionsCell.appendChild(createActionButton('Archive', 'delete_btn', () => archiveBook(book)));
         }
         rowElement.appendChild(actionsCell);
 
         booksTableBody.appendChild(rowElement);
     });
-
-    booksMessage.textContent = visibleBooks.length
-        ? visibleBooks.length + ' of ' + allBooks.length + ' books shown.'
-        : 'No books found.';
 }
 
-// ---------- add / edit form ----------
+// ---------- add / edit form + cover preview ----------
+function showCoverPreview(imageUrl, captionText) {
+    coverPreviewImage.hidden = !imageUrl;
+    coverPreviewHolder.hidden = !!imageUrl;
+    if (imageUrl) coverPreviewImage.src = imageUrl;
+    coverPreviewCaption.textContent = captionText || '';
+}
+
+function clearPendingPreview() {
+    if (pendingPreviewUrl) {
+        URL.revokeObjectURL(pendingPreviewUrl);
+        pendingPreviewUrl = '';
+    }
+}
+
+coverFileInput.addEventListener('change', () => {
+    clearPendingPreview();
+    const chosenFile = coverFileInput.files[0];
+    if (chosenFile) {
+        pendingPreviewUrl = URL.createObjectURL(chosenFile);
+        showCoverPreview(pendingPreviewUrl, 'New cover (not saved yet)');
+    } else {
+        showCoverPreview(existingCoverUrl, existingCoverUrl ? 'Current cover' : '');
+    }
+});
+
 function openBookForm(bookToEdit) {
     bookFormElement.reset();
+    clearPendingPreview();
     bookFormErrors.textContent = '';
-    bookFormElement.elements.cover_image.value = '';
+    existingCoverUrl = '';
 
     if (bookToEdit) {
         bookModalTitle.textContent = 'Edit Book';
         saveFormButton.textContent = 'Save Changes';
-        bookFormElement.elements.book_id.value          = bookToEdit.book_id;
-        bookFormElement.elements.title.value            = bookToEdit.title;
-        bookFormElement.elements.author.value           = bookToEdit.author;
-        bookFormElement.elements.isbn.value             = bookToEdit.isbn || '';
-        bookFormElement.elements.publication_year.value = bookToEdit.publication_year;
-        bookFormElement.elements.category.value         = bookToEdit.category;
-        bookFormElement.elements.format.value           = bookToEdit.format;
-        copiesTotalInput.value = String(bookToEdit.copies_total ?? '');
+        const formFields = bookFormElement.elements;
+        formFields.book_id.value          = bookToEdit.book_id;
+        formFields.title.value            = bookToEdit.title;
+        formFields.author.value           = bookToEdit.author;
+        formFields.isbn.value             = bookToEdit.isbn || '';
+        formFields.publication_year.value = bookToEdit.publication_year;
+        formFields.category.value         = bookToEdit.category;
+        // Temporarily hidden until the format option is ready to be added back.
+        // if (formFields.format) formFields.format.value = bookToEdit.format;
+        formFields.copies_total.value     = bookToEdit.copies_total;
+        formFields.description.value      = bookToEdit.description || '';
+        existingCoverUrl = coverUrlFor(bookToEdit.cover_image);
+        showCoverPreview(existingCoverUrl, existingCoverUrl ? 'Current cover' : '');
     } else {
         bookModalTitle.textContent = 'Add New Book';
         saveFormButton.textContent = 'Add Book';
         bookFormElement.elements.book_id.value = '';
+        bookFormElement.elements.copies_total.value = 1;
+        showCoverPreview('', '');
     }
     bookModalElement.classList.add('is_open');
     bookFormElement.elements.title.focus();
@@ -163,13 +218,14 @@ function openBookForm(bookToEdit) {
 
 function closeBookForm() {
     bookModalElement.classList.remove('is_open');
+    clearPendingPreview();
 }
 
 bookFormElement.addEventListener('submit', async (event) => {
     event.preventDefault();
     const formData = new FormData(bookFormElement);
     const isEditing = formData.get('book_id') !== '';
-    if (isEditing) formData.append('_method', 'PUT');
+    if (isEditing) formData.append('_method', 'PUT');   // PHP can't read a multipart PUT, so we tunnel it
 
     saveFormButton.disabled = true;
     bookFormErrors.textContent = '';
@@ -178,15 +234,15 @@ bookFormElement.addEventListener('submit', async (event) => {
         closeBookForm();
         await loadBooks();
     } catch (error) {
-        bookFormErrors.textContent = error.message;   // shows validation errors inside the modal
+        bookFormErrors.textContent = error.message;
     } finally {
         saveFormButton.disabled = false;
     }
 });
 
-// ---------- delete ----------
-async function deleteBook(book) {
-    if (!confirm('Archive "' + book.title + '"?')) return;
+// ---------- archive / restore ----------
+async function archiveBook(book) {
+    if (!confirm('Archive "' + book.title + '"? Students will no longer see it. You can restore it later.')) return;
     try {
         await callBooksApi('DELETE', { book_id: book.book_id });
         await loadBooks();
@@ -196,7 +252,6 @@ async function deleteBook(book) {
 }
 
 async function restoreBook(book) {
-    if (!confirm('Restore "' + book.title + '" to the active collection?')) return;
     try {
         await callBooksApi('PUT', { book_id: book.book_id, action: 'restore' });
         await loadBooks();
@@ -205,18 +260,55 @@ async function restoreBook(book) {
     }
 }
 
+// ---------- waitlist modal ----------
+async function openWaitlistModal(book) {
+    waitlistTitle.textContent = 'Waitlist — ' + book.title;
+    waitlistMessage.textContent = 'Loading...';
+    waitlistBody.replaceChildren();
+    waitlistModal.classList.add('is_open');
+
+    try {
+        const response = await fetch(ADMIN_API_URL + '?action=waitlist&book_id=' + encodeURIComponent(book.book_id),
+            { credentials: 'same-origin', cache: 'no-store' });
+        const result = await response.json();
+        if (!result.ok) throw new Error((result.errors || ['Unknown error.']).join('\n'));
+
+        waitlistMessage.textContent = result.entries.length ? 'First come, first served.' : 'Nobody is waiting for this book.';
+        result.entries.forEach((entry, index) => {
+            const rowElement = document.createElement('tr');
+            createCell(rowElement, index + 1);
+            createCell(rowElement, entry.student_name);
+            createCell(rowElement, entry.student_email);
+            createCell(rowElement, entry.course ? entry.course + ' ' + entry.year_level : '');
+            createCell(rowElement, new Date(entry.joined_at.replace(' ', 'T')).toLocaleDateString('en-US',
+                { year: 'numeric', month: 'short', day: 'numeric' }));
+            waitlistBody.appendChild(rowElement);
+        });
+    } catch (error) {
+        waitlistMessage.textContent = 'Could not load the waitlist: ' + error.message;
+    }
+}
+
+function closeWaitlistModal() {
+    waitlistModal.classList.remove('is_open');
+}
+
 // ---------- wiring ----------
 openAddButton.addEventListener('click', () => openBookForm(null));
 cancelFormButton.addEventListener('click', closeBookForm);
 closeFormButton.addEventListener('click', closeBookForm);
-bookModalElement.addEventListener('click', (event) => {
-    if (event.target === bookModalElement) closeBookForm();
-});
+closeWaitlistButton.addEventListener('click', closeWaitlistModal);
+bookModalElement.addEventListener('click', (event) => { if (event.target === bookModalElement) closeBookForm(); });
+waitlistModal.addEventListener('click', (event) => { if (event.target === waitlistModal) closeWaitlistModal(); });
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') closeBookForm();
+    if (event.key === 'Escape') { closeBookForm(); closeWaitlistModal(); }
 });
 searchInput.addEventListener('input', renderBooks);
 statusFilterSelect.addEventListener('change', renderBooks);
-archiveViewSelect.addEventListener('change', loadBooks);
+archiveViewSelect.addEventListener('change', () => {
+    openAddButton.hidden = isArchiveView();        // no adding while viewing the archive
+    statusFilterSelect.hidden = isArchiveView();   // status filter only matters for active books
+    loadBooks();
+});
 
 loadBooks();

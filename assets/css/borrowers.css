@@ -1,10 +1,28 @@
-/* borrowers.css — load after Collection.css */
-.status_overdue  { color: #a12d1a; font-weight: 800; }
-.status_returned { color: #2f6b3a; font-weight: 800; }
-.status_borrowed { color: #7D3F28; font-weight: 800; }
-.return_btn { background: #3E2C1B; color: #FDF2E9; }
-.message_cell { text-align: center; color: #7D6B5A; padding: 1.5rem; }
-.book_author_small { display: block; font-size: .75rem; color: #7D6B5A; }
+.status_overdue  { 
+    color: #a12d1a; font-weight: 800; 
+}
+.status_returned {
+    color: #2f6b3a; font-weight: 800; 
+}
+.status_borrowed { 
+    color: #7D3F28; font-weight: 800; 
+}
+.return_btn { 
+    background: #3E2C1B; color: #FDF2E9; 
+}
+.message_cell { 
+    text-align: center; color: #7D6B5A; padding: 1.5rem;
+}
+.book_author_small { 
+    display: block; font-size: .75rem; color: #7D6B5A; 
+}
 
-.status_reserved  { color: #9a6a12; font-weight: 800; }
-.status_cancelled, .status_expired { color: #7D6B5A; font-weight: 800; }
+.status_reserved  { 
+    color: #9a6a12; font-weight: 800;
+}
+.status_cancelled, .status_expired { 
+    color: #7D6B5A; font-weight: 800; 
+}
+.status_lost { 
+    color: #a12d1a; font-weight: 800; 
+}

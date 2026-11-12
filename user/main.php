@@ -17,13 +17,14 @@ if (isset($_SESSION['first_name']) && is_string($_SESSION['first_name'])) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Inspiration&family=M+PLUS+1p&family=Montserrat+Alternates:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Pontano+Sans:wght@300&display=swap"
         rel="stylesheet">
-    <!-- E-BOOKS (disabled for now): re-add <script src="https://www.google.com/books/jsapi.js"></script> when e-book previews return -->
+    <!-- E-BOOKS preview (disabled for now): <script src="https://www.google.com/books/jsapi.js"></script> -->
 
-    <link rel="stylesheet" href="../assets/css/user.css">
+    <link rel="stylesheet" href="../assets/css/User.css?v=20261112-1">
     <script src="../assets/js/user/library_client.js?v=20261108-1" defer></script>
-    <script src="../assets/js/user/browse_catalog.js?v=20261108-1" defer></script>
-    <script src="../assets/js/user/book_details_modal.js?v=20261108-1" defer></script>
+    <script src="../assets/js/user/browse_catalog.js?v=20261112-1" defer></script>
+    <script src="../assets/js/user/book_details_modal.js?v=20261112-1" defer></script>
     <script src="../assets/js/user/book_borrow_modal.js?v=20261108-1" defer></script>
+    <script src="../assets/js/user/profile_menu.js" defer></script>
 </head>
 
 <body>
@@ -33,7 +34,7 @@ if (isset($_SESSION['first_name']) && is_string($_SESSION['first_name'])) {
             <a href="#home">Home</a>
             <a href="#browse_books">Browse</a>
             <a href="my_books.html#my_books">My Books</a>
-            <a href="my_books.html#my_books">History</a>
+            <!-- <a href="my_books.html#">History</a> -->
             <a href="#about">About</a>
         </nav>
 
@@ -90,10 +91,10 @@ if (isset($_SESSION['first_name']) && is_string($_SESSION['first_name'])) {
                     <span class="stat_number">10+</span>
                     <span class="stat_label">Book Titles</span>
                 </div>
-                <div class="stat_card">
+                <!-- <div class="stat_card">
                     <span class="stat_number">Digital/Physical</span>
                     <span class="stat_label">Formats</span>
-                </div>
+                </div> -->
                 <div class="stat_card">
                     <span class="stat_number">24/7</span>
                     <span class="stat_label">Access</span>

@@ -1,0 +1,81 @@
+body {
+    overflow: auto;
+    background: #FDF2E9;
+    color: #1E130A;
+}
+
+.page_title {
+    font-family: "Montserrat Alternates", sans-serif;
+    margin-bottom: .5rem;
+}
+
+.stat_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 1rem 0 1.5rem;
+}
+
+.stat_card {
+    background: #fff;
+    border: 1px solid #d9c8b8;
+    border-radius: 12px;
+    padding: 1.1rem 1rem;
+    box-shadow: 0 6px 16px rgba(30, 19, 10, .05);
+}
+
+.stat_card .stat_value {
+    display: block;
+    font-family: "Montserrat Alternates", sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #3E2C1B;
+}
+
+.stat_card .stat_label {
+    display: block;
+    margin-top: .2rem;
+    font-weight: 700;
+}
+
+.stat_card .stat_note {
+    display: block;
+    margin-top: .2rem;
+    font-size: .8rem;
+    color: #7D6B5A;
+}
+
+.stat_card.stat_alert .stat_value {
+    color: #a12d1a;
+}
+
+.panel {
+    margin-bottom: 1.5rem;
+}
+
+.panel h3 {
+    margin-bottom: .5rem;
+    font-family: "Montserrat Alternates", sans-serif;
+}
+
+.panel .table_scroll {
+    max-height: 18rem;
+}
+
+.two_columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.message_cell {
+    text-align: center;
+    color: #7D6B5A;
+    padding: 1.25rem;
+}
+
+@media (max-width: 900px) {
+    .two_columns {
+        grid-template-columns: 1fr;
+    }
+}

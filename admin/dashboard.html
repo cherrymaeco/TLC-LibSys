@@ -3,24 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TLC LibSys</title>
+    <title>TLC LibSys — Dashboard</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="../assets/css/adminstyle.css">
-
+    <link rel="stylesheet" href="../assets/css/collection_style.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css?v=20261112-1">
+    <script src="../assets/js/admin/admin_common.js" defer></script>
+    <script src="../assets/js/admin/dashboard.js" defer></script>
 </head>
 <body>
     <header>
         <h3>TLC LibSys</h3>
-        <nav>        
+        <nav>
             <a href="dashboard.html">Dashboard</a>
             <a href="collection.html">Collection</a>
             <a href="borrowers.html">Borrowers</a>
         </nav>
     </header>
 
+    <main class="container">
+        <h2 class="page_title">Dashboard</h2>
+        <p id="dashboard_message" class="books_message" aria-live="polite"></p>
+
+        <section class="stat_grid" id="stat_grid" aria-label="Library totals"></section>
+
+        <section class="panel">
+            <h3>Overdue borrowers</h3>
+            <div class="table_scroll">
+                <table>
+                    <thead><tr><th>Borrower</th><th>Email</th><th>Book</th><th>Due Date</th><th>Days Overdue</th></tr></thead>
+                    <tbody id="overdue_body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="two_columns">
+            <section class="panel">
+                <h3>Reserved &mdash; waiting for pickup</h3>
+                <div class="table_scroll">
+                    <table>
+                        <thead><tr><th>Student</th><th>Book</th><th>Reserved On</th><th>Pick Up By</th></tr></thead>
+                        <tbody id="pickup_body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h3>Waitlist &mdash; waiting for a copy</h3>
+                <div class="table_scroll">
+                    <table>
+                        <thead><tr><th>Student</th><th>Book</th><th>Place</th><th>Joined</th></tr></thead>
+                        <tbody id="waitlist_body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
 </body>
 </html>

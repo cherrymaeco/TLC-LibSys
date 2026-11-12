@@ -1,8 +1,4 @@
 <?php
-// admin/borrowers_api.php — loans overview + pickup / return / cancel for the admin Borrowers tab.
-//   GET -> every loan (reserved, borrowed, overdue, returned, cancelled, expired)
-//   PUT -> { "loan_id": 5, "action": "pickup" | "return" | "cancel" }   ("return" is the default)
-
 require __DIR__ . '/../config/db.php';
 require __DIR__ . '/../config/library_lib.php';
 session_start();
@@ -10,7 +6,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 const REQUIRE_ADMIN = true;
 if (REQUIRE_ADMIN) {
-    requireAdminSession($pdo);   // reads the user from the DB, same idea as books_api.php
+    requireAdminSession($pdo);
 }
 
 try {
@@ -26,6 +22,7 @@ try {
                    CASE
                        WHEN l.returned_at IS NOT NULL THEN
                            CASE l.end_reason WHEN 'cancelled' THEN 'Cancelled'
+                                             WHEN 'lost'      THEN 'Lost'
                                              WHEN 'expired'   THEN 'Expired'
                                              ELSE 'Returned' END
                        WHEN l.picked_up_at IS NULL THEN 'Reserved'
@@ -74,6 +71,13 @@ try {
                      WHERE loan_id = ? AND picked_up_at IS NULL AND returned_at IS NULL"
                 );
                 $change->execute([$loanId]);
+            } elseif ($action === 'lost') {
+                // Only a book that left the library can be lost.
+                $change = $pdo->prepare(
+                    "UPDATE loans SET returned_at = NOW(), end_reason = 'lost'
+                     WHERE loan_id = ? AND picked_up_at IS NOT NULL AND returned_at IS NULL"
+                );
+                $change->execute([$loanId]);
             } else {
                 $pdo->rollBack();
                 failWith('Unknown action.', 400);
@@ -82,6 +86,11 @@ try {
             if ($change->rowCount() === 0) {
                 $pdo->rollBack();
                 failWith('That action does not apply to this loan in its current state.', 409);
+            }
+            if ($action === 'lost') {
+                // The copy is gone for good, so the library owns one copy fewer.
+                $pdo->prepare('UPDATE books SET copies_total = copies_total - 1 WHERE book_id = ? AND copies_total > 0')
+                    ->execute([$bookId]);
             }
             if ($action !== 'pickup') {
                 promoteWaitlist($pdo, $bookId);   // a copy was freed: next student in line gets it

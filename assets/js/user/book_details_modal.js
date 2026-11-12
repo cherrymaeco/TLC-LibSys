@@ -1,4 +1,3 @@
-// book_details_modal.js — "Details" popup. Shows the book's cover image.
 const bookModal = document.getElementById('book_details_modal');
 const closeModalButton = bookModal.querySelector('.modal_close');
 const detailsContainer = document.getElementById('browse_books_container');
@@ -23,22 +22,25 @@ function openBookModal(bookId, trigger) {
     setDetailLine('genre', 'Category', book.category);
     setDetailLine('modal_book_isbn', 'ISBN', book.isbn);
     setDetailLine('modal_book_copies', 'Copies available', book.copies_available + ' of ' + book.copies_total);
+
+    // Optional description the admin wrote (the element is created on first use).
+    let descriptionElement = document.getElementById('modal_book_description');
+    if (!descriptionElement) {
+        descriptionElement = document.createElement('p');
+        descriptionElement.id = 'modal_book_description';
+        document.getElementById('google_books_link').before(descriptionElement);
+    }
+    descriptionElement.style.height = 'auto';
+    descriptionElement.style.maxHeight = '250px';
+    descriptionElement.textContent = book.description || 'No description has been added for this book yet.';
     document.getElementById('google_books_link').href =
         'https://books.google.com/books?q=' + encodeURIComponent(book.title + ' ' + book.author);
 
-    // The cover image replaces the old Google Books preview.
     const coverImage = document.createElement('img');
     coverImage.className = 'book_preview_cover';
     coverImage.src = TLCLibrary.coverUrl(book.cover_image);
     coverImage.alt = 'Cover of ' + book.title;
     coverCanvas.replaceChildren(coverImage);
-
-    /* ---------- E-BOOKS (disabled for now) ----------
-       When e-books come back: load the Google Books embed instead of the cover, e.g.
-         const embedUrl = 'https://books.google.com/books?vid=ISBN:' + book.isbn + '&printsec=frontcover&output=embed';
-         coverCanvas.innerHTML = '<iframe src="' + embedUrl + '" allowfullscreen></iframe>';
-       and add back <script src="https://www.google.com/books/jsapi.js"></script> in main.php.
-    ---------------------------------------------------- */
 
     bookModal.classList.add('is_open');
     bookModal.setAttribute('aria-hidden', 'false');
@@ -60,8 +62,15 @@ function closeBookModal() {
 // One listener on the container works for cards that are drawn later.
 detailsContainer.addEventListener('click', (event) => {
     if (!(event.target instanceof Element)) return;
-    const detailsButton = event.target.closest('.details_button');
-    if (detailsButton) openBookModal(detailsButton.dataset.bookId, detailsButton);
+    const cardElement = event.target.closest('.book_card');
+    if (!cardElement || event.target.closest('button, a, input, select, textarea')) return;
+    openBookModal(cardElement.dataset.bookId, cardElement);
+});
+detailsContainer.addEventListener('keydown', (event) => {
+    if (!(event.target instanceof Element) || !event.target.matches('.book_card')) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    openBookModal(event.target.dataset.bookId, event.target);
 });
 closeModalButton.addEventListener('click', closeBookModal);
 bookModal.addEventListener('click', (event) => { if (event.target === bookModal) closeBookModal(); });

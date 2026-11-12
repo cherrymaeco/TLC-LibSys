@@ -1,5 +1,5 @@
 window.TLCLibrary = (function () {
-    const LIBRARY_API_URL = 'library_api.php';   // user/library_api.php (same folder as the pages)
+    const LIBRARY_API_URL = 'library_api.php';   
 
     const COVER_PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
         '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400">' +

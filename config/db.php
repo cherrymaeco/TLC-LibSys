@@ -1,6 +1,4 @@
 <?php
-// db.php — database connection (PDO)
-
 $host = 'localhost';
 $db   = 'tlc_libsys';
 $user = 'root';

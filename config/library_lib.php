@@ -1,7 +1,5 @@
 <?php
 // config/library_lib.php — borrowing rules + helpers shared by the student and admin APIs.
-// Include AFTER db.php and session_start().
-
 date_default_timezone_set('Asia/Manila');
 
 // ---------- Library rules (change these numbers to change the policy) ----------

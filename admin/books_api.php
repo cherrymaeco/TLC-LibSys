@@ -1,10 +1,10 @@
 <?php
 require __DIR__ . '/../config/db.php'; 
-session_start(); // Start session BEFORE any output
+session_start();
+require __DIR__ . '/../config/library_lib.php';   
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Set to true now that we are testing login
 const REQUIRE_ADMIN_FOR_CHANGES = true;
 
 const ALLOWED_CATEGORIES = [
@@ -102,7 +102,6 @@ function requireAdmin(PDO $pdo): void
     $_SESSION['role'] = $user['role'];
 }
 
-/** Cleans the raw input and returns [cleanedBook, listOfErrors]. */
 function validateBookInput(array $rawInput): array
 {
     $errors = [];
@@ -131,6 +130,9 @@ function validateBookInput(array $rawInput): array
         $errors[] = 'ISBN must be 10 or 13 characters.';
     }
 
+    $description = trim((string) ($rawInput['description'] ?? ''));
+    if (mb_strlen($description) > 2000) { $errors[] = 'Description must be 2000 characters or fewer.'; }
+
     $cleanedBook = [
         'isbn'             => $isbn === '' ? null : strtoupper($isbn),
         'title'            => $title,
@@ -139,6 +141,7 @@ function validateBookInput(array $rawInput): array
         'category'         => $category,
         'format'           => $format,
         'copies_total'     => $copiesTotal,
+        'description'      => $description === '' ? null : $description,
     ];
     return [$cleanedBook, $errors];
 }
@@ -187,7 +190,7 @@ $requestMethod = $_POST['_method'] ?? $_SERVER['REQUEST_METHOD'];
 try {
     // ---------- READ ----------
     if ($requestMethod === 'GET') {
-        // ?archived=1 shows the archive (admin only). Default shows active books.
+        // archived=1 shows the archive. Default shows active books.
         $showArchived = ($_GET['archived'] ?? '') === '1';
         if ($showArchived) {
             requireAdmin($pdo);
@@ -195,7 +198,9 @@ try {
         $archiveFilter = $showArchived ? 'b.archived_at IS NOT NULL' : 'b.archived_at IS NULL';
         $listQuery = "
             SELECT b.book_id, b.isbn, b.title, b.author, b.publication_year,
-                b.category, b.format, b.cover_image, b.copies_total, b.archived_at,
+                b.category, b.format, b.cover_image, b.copies_total, b.archived_at, b.description,
+                (SELECT COUNT(*) FROM waitlist w WHERE w.book_id = b.book_id
+                  AND w.fulfilled_at IS NULL AND w.cancelled_at IS NULL) AS waitlist_count,
                 COUNT(l.loan_id)                      AS copies_borrowed,
                 b.copies_total - COUNT(l.loan_id)     AS copies_available,
                 IF(b.copies_total - COUNT(l.loan_id) > 0, 'Available', 'Borrowed') AS status
@@ -219,8 +224,8 @@ try {
         $newBook['cover_image'] = saveCoverImage(null);
         try {
             $insertStatement = $pdo->prepare(
-                'INSERT INTO books (isbn, title, author, publication_year, category, format, copies_total, cover_image)
-                 VALUES (:isbn, :title, :author, :publication_year, :category, :format, :copies_total, :cover_image)'
+                'INSERT INTO books (isbn, title, author, publication_year, category, format, copies_total, cover_image, description)
+                 VALUES (:isbn, :title, :author, :publication_year, :category, :format, :copies_total, :cover_image, :description)'
             );
             $insertStatement->execute($newBook);
         } catch (PDOException $exception) {
@@ -239,7 +244,7 @@ try {
         if (!$bookId || !bookExists($pdo, $bookId)) {
             sendJson(['ok' => false, 'errors' => ['Book not found.']], 404);
         }
-        // Restore a book from the archive: PUT { book_id, action: "restore" }
+        // Restore a book from the archive:
         if (($requestBody['action'] ?? '') === 'restore') {
             $pdo->prepare('UPDATE books SET archived_at = NULL WHERE book_id = ?')->execute([$bookId]);
             sendJson(['ok' => true]);
@@ -268,7 +273,7 @@ try {
                 'UPDATE books SET isbn = :isbn, title = :title, author = :author,
                         publication_year = :publication_year, category = :category, format = :format,
                         copies_total = :copies_total,
-                        cover_image = :cover_image
+                        cover_image = :cover_image, description = :description
                  WHERE book_id = :book_id'
             );
             $updateStatement->execute($updatedBook);
@@ -286,11 +291,15 @@ try {
         if ($updatedBook['cover_image'] !== $oldCoverImage) {
             removeCoverImage($oldCoverImage);
         }
+        // If the admin added copies, students waiting in line get them now.
+        $pdo->beginTransaction();
+        lockBook($pdo, $bookId);
+        promoteWaitlist($pdo, $bookId);
+        $pdo->commit();
         sendJson(['ok' => true]);
     }
 
-    // ---------- ARCHIVE (the old "delete") ----------
-    // The row stays in the database so loan history keeps working and the book can be restored.
+    // ---------- ARCHIVE ----------
     if ($requestMethod === 'DELETE') {
         $bookId = (int) ($requestBody['book_id'] ?? 0);
         if (!$bookId || !bookExists($pdo, $bookId)) {

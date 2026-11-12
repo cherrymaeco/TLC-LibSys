@@ -10,8 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@400;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="../assets/css/adminstyle.css">
-    <link rel="stylesheet" href="../assets/css/Collection.css">
-    <script src="../assets/js/admin/collection.js?v=20261109-1" defer></script>
+    <link rel="stylesheet" href="../assets/css/collection_style.css">
+    <link rel="stylesheet" href="../assets/css/collection_extra.css">
+    <script src="../assets/js/admin/admin_common.js" defer></script>
+    <script src="../assets/js/admin/collection.js?v=20261112-1" defer></script>
 </head>
 <body>
     <header>
@@ -39,13 +41,13 @@
             <button type="button" id="open_add_book" class="primary_btn">+ Add Book</button>
         </div>
 
-
         <div class="table_scroll">
             <table>
                 <thead>
                     <tr>
                         <th>Cover</th><th>ISBN</th><th>Title</th><th>Author</th><th>Year</th><th>Category</th>
-                        <th>Format</th><th>Status</th><th>Available</th><th>Total copies</th><th>Actions</th>
+                        <!-- <th>Format</th> -->
+                        <th>Status</th><th>Available</th><th>Total copies</th><th>Waitlist</th><th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="books_table_body">
@@ -57,43 +59,57 @@
         </div>
     </main>
 
-    <!-- Add / Edit modal (one form used for both) -->
+    <!-- Add / Edit modal: form on the left, cover preview on the right -->
     <div class="modal_overlay" id="book_form_modal">
-        <div class="modal_box">
+        <div class="modal_box modal_wide">
             <div class="modal_top">
                 <h2 id="book_form_title">Add New Book</h2>
                 <button type="button" id="close_book_form" class="modal_x" aria-label="Close">&times;</button>
             </div>
 
             <form id="book_form">
-                <input type="hidden" name="book_id">
-                <input type="text" name="title" placeholder="Title" required>
-                <input type="text" name="author" placeholder="Author" required>
-                <input type="text" name="isbn" placeholder="ISBN (optional, 10 or 13 digits)" inputmode="numeric" pattern="[0-9]*" maxlength="13" minlength="10">
-                <input type="number" name="publication_year" placeholder="Year" min="1000" max="2100" required>
-                <select name="category" required>
-                    <option value="" disabled selected>Select a category</option>
-                    <option>Generalities</option>
-                    <option>Fiction</option>
-                    <option>Non-Fiction</option>
-                    <option>Philosophy &amp; Psychology</option>
-                    <option>Religion</option>
-                    <option>Social Sciences</option>
-                    <option>Language</option>
-                    <option>Natural Sciences &amp; Mathematics</option>
-                    <option>Technology</option>
-                    <option>Arts &amp; Recreation</option>
-                    <option>Literature</option>
-                    <option>History, Biography &amp; Geography</option>
-                </select>
-                <select name="format" required>
-                    <option value="Physical">Physical</option>
-                    <option value="E-Book">E-Book</option>
-                </select>
-                <input type="number" id="copies_total" name="copies_total" placeholder="Total Copies" min="1" max="999" required>
-                <label for="cover_image">Cover image (optional)</label>
-                <input type="file" id="cover_image" name="cover_image" accept="image/jpeg,image/png,image/webp">
-                <small class="cover_image_help">JPG, PNG, or WebP up to 5 MB. Leave empty when editing to keep the current cover.</small>
+                <div class="modal_columns">
+                    <div class="modal_fields">
+                        <input type="hidden" name="book_id">
+                        <input type="text" name="title" placeholder="Title" required>
+                        <input type="text" name="author" placeholder="Author" required>
+                        <input type="text" name="isbn" placeholder="ISBN (optional, 10 or 13 digits)" inputmode="numeric" pattern="[0-9]*" maxlength="13" minlength="10">
+                        <input type="number" name="publication_year" placeholder="Year" min="1000" max="2100" required>
+                        <select name="category" required>
+                            <option value="" disabled selected>Select a category</option>
+                            <option>Generalities</option>
+                            <option>Fiction</option>
+                            <option>Non-Fiction</option>
+                            <option>Philosophy &amp; Psychology</option>
+                            <option>Religion</option>
+                            <option>Social Sciences</option>
+                            <option>Language</option>
+                            <option>Natural Sciences &amp; Mathematics</option>
+                            <option>Technology</option>
+                            <option>Arts &amp; Recreation</option>
+                            <option>Literature</option>
+                            <option>History, Biography &amp; Geography</option>
+                        </select>
+                        <!-- <select name="format" required>
+                            <option value="Physical">Physical</option>
+                            <option value="E-Book">E-Book</option>
+                        </select> -->
+                        <input type="number" id="copies_total" name="copies_total" placeholder="Total Copies" min="1" max="999" required>
+                        <textarea name="description" id="book_description" rows="4" maxlength="2000" placeholder="Description (optional)"></textarea>
+                    </div>
+
+                    <aside class="cover_preview_column" aria-label="Cover preview">
+                        <div class="cover_preview_frame">
+                            <img id="cover_preview_image" alt="Book cover preview" hidden>
+                            <span id="cover_preview_placeholder">No cover yet</span>
+                        </div>
+                        <p class="cover_preview_caption" id="cover_preview_caption"></p>
+
+                        <label for="cover_image">Cover image (optional)</label>
+                        <input type="file" id="cover_image" name="cover_image" accept="image/jpeg,image/png,image/webp">
+                        <small class="cover_image_help">JPG, PNG, or WebP up to 5 MB. Leave empty when editing to keep the current cover.</small>
+                    </aside>
+                </div>
 
                 <p id="book_form_errors" class="form_errors"></p>
 
@@ -102,6 +118,23 @@
                     <button type="submit" id="save_book_button" class="primary_btn">Add Book</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Waitlist modal: who is waiting for this book -->
+    <div class="modal_overlay" id="waitlist_modal">
+        <div class="modal_box modal_medium">
+            <div class="modal_top">
+                <h2 id="waitlist_modal_title">Waitlist</h2>
+                <button type="button" id="close_waitlist_modal" class="modal_x" aria-label="Close">&times;</button>
+            </div>
+            <p id="waitlist_modal_message" class="books_message"></p>
+            <div class="table_scroll">
+                <table>
+                    <thead><tr><th>#</th><th>Student</th><th>Email</th><th>Course / Year</th><th>Joined</th></tr></thead>
+                    <tbody id="waitlist_modal_body"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>

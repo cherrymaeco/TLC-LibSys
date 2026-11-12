@@ -1,6 +1,5 @@
-// borrowers.js — every loan (one row per copy): reserved, borrowed, overdue, and past ones.
 // Admin actions: Mark Picked Up, Mark Returned, Cancel reservation.
-const LOANS_API_URL = 'borrowers_api.php';  
+const LOANS_API_URL = 'borrowers_api.php';   // admin/borrowers_api.php
 
 const loansTableBody   = document.getElementById('loans_table_body');
 const loanSearchInput  = document.getElementById('loan_search');
@@ -51,7 +50,7 @@ function showMessageRow(text) {
 
 function addCell(rowElement, text, className) {
     const cell = document.createElement('td');
-    cell.textContent = text || '—';   // textContent keeps names/titles safe from HTML injection
+    cell.textContent = text || '—';  
     if (className) cell.className = className;
     rowElement.appendChild(cell);
     return cell;
@@ -66,7 +65,7 @@ function createActionButton(label, className, onClick) {
     return button;
 }
 
-const FINISHED_STATUSES = ['Returned', 'Cancelled', 'Expired'];
+const FINISHED_STATUSES = ['Returned', 'Cancelled', 'Expired', 'Lost'];
 
 function getVisibleLoans() {
     const searchText = loanSearchInput.value.trim().toLowerCase();
@@ -120,6 +119,7 @@ function renderLoans() {
             actionsCell.appendChild(createActionButton('Cancel', 'delete_btn', () => changeLoan(loan, 'cancel')));
         } else if (loan.loan_status === 'Borrowed' || loan.loan_status === 'Overdue') {
             actionsCell.appendChild(createActionButton('Mark Returned', 'return_btn', () => changeLoan(loan, 'return')));
+            actionsCell.appendChild(createActionButton('Mark Lost', 'delete_btn', () => changeLoan(loan, 'lost')));
         } else {
             actionsCell.textContent = formatDate(loan.returned_at);
         }
@@ -131,6 +131,8 @@ function renderLoans() {
 
 const CONFIRM_MESSAGES = {
     pickup: (loan) => loan.borrower_name + ' is picking up "' + loan.book_title + '" now? The loan period starts today.',
+    lost: (loan) => 'Mark "' + loan.book_title + '" as LOST by ' + loan.borrower_name +
+        '? This closes the loan and removes one copy from the library\'s total copies.',
     return: (loan) => 'Mark "' + loan.book_title + '" as returned by ' + loan.borrower_name + '?',
     cancel: (loan) => 'Cancel the reservation of "' + loan.book_title + '" for ' + loan.borrower_name + '?'
 };

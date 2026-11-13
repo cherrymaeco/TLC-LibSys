@@ -65,20 +65,23 @@ function createActionButton(label, className, onClick) {
     return button;
 }
 
-const FINISHED_STATUSES = ['Returned', 'Cancelled', 'Expired', 'Lost'];
+const FINISHED_STATUSES = ['returned', 'cancelled', 'expired', 'lost'];
 
 function getVisibleLoans() {
     const searchText = loanSearchInput.value.trim().toLowerCase();
     const filterChoice = loanFilterSelect.value;
 
     return allLoans.filter((loan) => {
-        const isFinished = FINISHED_STATUSES.includes(loan.loan_status);
+        const loanStatus = loan.loan_status.toLowerCase();
+        const isFinished = FINISHED_STATUSES.includes(loanStatus);
         const matchesFilter =
             filterChoice === 'all' ||
             (filterChoice === 'current'  && !isFinished) ||
-            (filterChoice === 'pickup'   && loan.loan_status === 'Reserved') ||
-            (filterChoice === 'overdue'  && loan.loan_status === 'Overdue') ||
-            (filterChoice === 'finished' && isFinished);
+            (filterChoice === 'reserved' && loanStatus === 'reserved') ||
+            (filterChoice === 'borrowed' && loanStatus === 'borrowed') ||
+            (filterChoice === 'overdue'  && loanStatus === 'overdue') ||
+            (filterChoice === 'returned' && loanStatus === 'returned') ||
+            (filterChoice === 'expired-cancelled' && (loanStatus === 'expired' || loanStatus === 'cancelled'));
 
         const searchableText = [loan.borrower_name, loan.borrower_email, loan.book_title, loan.isbn]
             .join(' ').toLowerCase();

@@ -19,11 +19,11 @@ if (isset($_SESSION['first_name']) && is_string($_SESSION['first_name'])) {
         rel="stylesheet">
     <!-- E-BOOKS preview (disabled for now): <script src="https://www.google.com/books/jsapi.js"></script> -->
 
-    <link rel="stylesheet" href="../assets/css/User.css?v=20261112-1">
-    <script src="../assets/js/user/library_client.js?v=20261108-1" defer></script>
-    <script src="../assets/js/user/browse_catalog.js?v=20261112-1" defer></script>
-    <script src="../assets/js/user/book_details_modal.js?v=20261112-1" defer></script>
-    <script src="../assets/js/user/book_borrow_modal.js?v=20261108-1" defer></script>
+    <link rel="stylesheet" href="../assets/css/user.css">
+    <script src="../assets/js/user/library_client.js" defer></script>
+    <script src="../assets/js/user/browse_catalog.js" defer></script>
+    <script src="../assets/js/user/book_details_modal.js" defer></script>
+    <script src="../assets/js/user/book_borrow_modal.js" defer></script>
     <script src="../assets/js/user/profile_menu.js" defer></script>
 </head>
 

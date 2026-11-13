@@ -33,10 +33,11 @@
         );
     }
 
-    function createInfoLine(labelText, valueText) {
+    function createInfoLine(labelText, valueText, valueClassName) {
         const lineElement = document.createElement('p');
         const valueElement = document.createElement('span');
         valueElement.textContent = valueText;
+        if (valueClassName) valueElement.className = valueClassName;
         lineElement.append(labelText + ' ', valueElement);
         return lineElement;
     }
@@ -78,8 +79,9 @@
         if (!isAvailable && book.waitlist_count > 0) {
             statusText += ' (' + book.waitlist_count + ' waiting)';
         }
-        infoElement.appendChild(createInfoLine('Status:', statusText));
-        infoElement.appendChild(createInfoLine('Copies:', book.copies_available + ' of ' + book.copies_total + ' in'));
+        infoElement.appendChild(createInfoLine('Status:', statusText, isAvailable ? 'status_available' : 'status_unavailable'));
+        const copiesText = book.copies_available + ' of ' + book.copies_total;
+        infoElement.appendChild(createInfoLine('Copies:', copiesText));
 
         const actionsElement = document.createElement('div');
         actionsElement.className = 'book_actions';

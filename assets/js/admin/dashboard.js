@@ -67,7 +67,7 @@ async function loadDashboard() {
             createStatCard(stats.waitlist_count, 'On waitlists', 'students waiting for a copy')
         );
 
-        fillTable('overdue_body', result.overdue, 5, 'No overdue books. 🎉', (row) => [
+        fillTable('overdue_body', result.overdue, 5, 'No overdue books.', (row) => [
             row.borrower_name, row.borrower_email, row.book_title, formatDate(row.due_date), row.days_overdue + ' day(s)'
         ]);
         fillTable('pickup_body', result.pending_pickups, 4, 'No reservations waiting for pickup.', (row) => [

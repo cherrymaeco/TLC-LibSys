@@ -1,5 +1,5 @@
 <?php
-// user/library_api.php — student-facing API: browse, borrow (reserve), waitlist
+// library_api.php — student-facing API: browse, borrow (reserve), waitlist
 
 require __DIR__ . '/../config/db.php';
 require __DIR__ . '/../config/library_lib.php';

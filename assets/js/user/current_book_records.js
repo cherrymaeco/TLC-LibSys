@@ -72,20 +72,14 @@
         rowElement.appendChild(cellElement);
     }
 
-    function isDueSoon(loan) {
-        if (loan.loan_status !== 'Borrowed') return false;
-        const [year, month, day] = loan.due_date.split('-').map(Number);
-        const daysLeft = (new Date(year, month - 1, day) - new Date().setHours(0, 0, 0, 0)) / 86400000;
-        return daysLeft <= 2;
-    }
-
     function getVisibleLoans() {
         const searchText = searchInput.value.trim().toLowerCase();
         return myLoans.filter((loan) => {
             const matchesFilter =
                 filterSelect.value === 'all' ||
-                (filterSelect.value === 'due-soon' && isDueSoon(loan)) ||
-                (filterSelect.value === 'overdue' && loan.loan_status === 'Overdue');
+                (filterSelect.value === 'borrowed' && loan.loan_status === 'Borrowed') ||
+                (filterSelect.value === 'overdue' && loan.loan_status === 'Overdue') ||
+                (filterSelect.value === 'reserved' && loan.loan_status === 'Reserved');
             return matchesFilter && (loan.title + ' ' + loan.author).toLowerCase().includes(searchText);
         });
     }
@@ -164,10 +158,23 @@
         const rowElements = getRowElements();
 
         bodyElement.replaceChildren(...rowElements);
-        tableWrapElement.hidden = rowElements.length === 0;
+        const isCurrentList = activeList === 'current';
+        tableWrapElement.hidden = rowElements.length === 0 && !isCurrentList;
+        if (isCurrentList && rowElements.length === 0) {
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.colSpan = settings.columns.length;
+            emptyCell.textContent = filterSelect.value === 'all'
+                ? settings.emptyText
+                : 'No books match this filter.';
+            emptyRow.appendChild(emptyCell);
+            bodyElement.appendChild(emptyRow);
+        }
         messageElement.textContent = rowElements.length
             ? rowElements.length + (rowElements.length === 1 ? ' record found.' : ' records found.')
-            : settings.emptyText;
+            : isCurrentList && filterSelect.value !== 'all'
+                ? 'No books match this filter.'
+                : settings.emptyText;
     }
 
     async function cancelReservation(loan) {

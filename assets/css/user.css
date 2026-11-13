@@ -8,7 +8,7 @@ body{
 }
 
 header{
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -203,7 +203,7 @@ hr{
 
 #browse_books_container{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;  
 }
   
@@ -311,10 +311,15 @@ hr{
 .book_card{
     display: flex;
     flex-direction: column;
+    cursor: pointer;
     border-radius: 10px;
     background-color: #3e2c1bce;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
     border: 1px solid #3E2C1B;
+}
+.book_card:focus-visible{
+    outline: 3px solid #d9c8b8;
+    outline-offset: 3px;
 }
 .book_card:hover{
     transform: scale(1.02);
@@ -347,6 +352,21 @@ hr{
 .book_info span{
     font-weight: normal;
 }
+.book_info .status_available,
+.book_info .status_unavailable{
+    display: inline-block;
+    padding: .15rem .5rem;
+    border-radius: 999px;
+    font-weight: 700;
+}
+.book_info .status_available{
+    background-color: #dce8d7;
+    color: #2f6b3a;
+}
+.book_info .status_unavailable{
+    background-color: #ead9d4;
+    color: #7D3F28;
+}
 .flex{
     display: flex; gap: 1rem; margin-bottom: 0.5rem;
     justify-content: space-between;
@@ -375,7 +395,7 @@ hr{
     display: none;
     position: fixed;
     inset: 0;
-    z-index: 10;
+    z-index: 1000;
     padding: 2rem;
     background: rgba(22, 16, 10, .82);
     align-items: center;
@@ -593,6 +613,7 @@ hr{
 .row_action_btn { padding: .3rem .8rem; border: 0; border-radius: 8px; background: #3E2C1B;
     color: #FDF2E9; font: inherit; font-weight: 700; cursor: pointer; }
 [hidden] { display: none !important; }
+#my_books_table td.status_cancelled, #my_books_table td.status_expired { font-weight: 800; color: #7D6B5A; }
 
 /*================ Scale ================*/
 @media (max-width: 1200px){

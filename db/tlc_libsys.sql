@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 12, 2026 at 09:55 AM
+-- Generation Time: Nov 13, 2026 at 07:30 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -93,7 +93,8 @@ INSERT INTO `loans` (`loan_id`, `book_id`, `user_id`, `borrowed_at`, `due_date`,
 (9, 6, 5, '2026-11-12 07:45:00', '2026-11-26', '2026-11-14', NULL, NULL, NULL),
 (10, 10, 6, '2026-11-09 16:20:00', '2026-11-23', '2026-11-10', NULL, '2026-11-09 18:30:00', 'cancelled'),
 (11, 1, 4, '2026-10-30 10:10:00', '2026-11-13', '2026-11-01', NULL, '2026-11-02 00:00:00', 'expired'),
-(12, 7, 9, '2026-10-10 14:00:00', '2026-10-24', NULL, '2026-10-10 14:05:00', '2026-11-05 09:30:00', 'lost');
+(12, 7, 9, '2026-10-10 14:00:00', '2026-10-24', NULL, '2026-10-10 14:05:00', '2026-11-05 09:30:00', 'lost'),
+(13, 10, 3, '2026-11-13 14:14:34', '2026-11-22', '2026-11-15', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -124,10 +125,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `first_name`, `middle_name`, `last_name`, `phone_number`, `school_email`, `course`, `year_level`, `password_hash`, `password_algo`, `role`, `is_active`, `last_login_at`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', NULL, 'Account', '09000000000', 'admin@email.com', NULL, NULL, '$2y$10$shSJGVpxN58mioWlwVHzIuh.xMbbHBsOT8WkFszjnMTQt0iS6rRc.', 'bcrypt', 'admin', 1, '2026-11-12 16:33:09', '2026-11-04 12:59:33', '2026-11-12 16:33:09'),
-(3, 'John', NULL, 'Doe', '09611515153', 'example@gmail.com', 'BSIT', 1, '$2y$10$nq0sQxqEG5jiccFEIZpFMu/Ep/NgojGKeXK.AbRs4oVjOIw9W7CDe', 'bcrypt', 'student', 1, '2026-11-12 16:33:00', '2026-11-04 13:17:56', '2026-11-12 16:33:00'),
+(1, 'Admin', NULL, 'Account', '09000000000', 'admin@email.com', NULL, NULL, '$2y$10$shSJGVpxN58mioWlwVHzIuh.xMbbHBsOT8WkFszjnMTQt0iS6rRc.', 'bcrypt', 'admin', 1, '2026-11-13 14:06:19', '2026-11-04 12:59:33', '2026-11-13 14:06:19'),
+(3, 'John', NULL, 'Doe', '09611515153', 'example@gmail.com', 'BSIT', 1, '$2y$10$nq0sQxqEG5jiccFEIZpFMu/Ep/NgojGKeXK.AbRs4oVjOIw9W7CDe', 'bcrypt', 'student', 1, '2026-11-13 14:12:59', '2026-11-04 13:17:56', '2026-11-13 14:12:59'),
 (4, 'Juan', NULL, 'De la Cruz', '09546546546', 'juan@email.com', 'BEED', 2, '$2y$10$nq0sQxqEG5jiccFEIZpFMu/Ep/NgojGKeXK.AbRs4oVjOIw9W7CDe', 'bcrypt', 'student', 1, '2026-11-11 20:50:22', '2026-11-11 20:38:38', '2026-11-12 16:09:34'),
-(5, 'Maria', 'Santos', 'Reyes', '09171234501', 'maria.reyes@email.com', 'BSIT', 2, '$2y$10$nq0sQxqEG5jiccFEIZpFMu/Ep/NgojGKeXK.AbRs4oVjOIw9W7CDe', 'bcrypt', 'student', 1, '2026-11-12 16:10:12', '2026-11-12 08:20:00', '2026-11-12 16:10:12'),
+(5, 'Maria', 'Santos', 'Reyes', '09171234501', 'maria.reyes@email.com', 'BSIT', 2, '$2y$10$nq0sQxqEG5jiccFEIZpFMu/Ep/NgojGKeXK.AbRs4oVjOIw9W7CDe', 'bcrypt', 'student', 1, '2026-11-13 14:25:12', '2026-11-12 08:20:00', '2026-11-13 14:25:12'),
 (6, 'Jose', 'Protacio', 'Mercado', '09181234502', 'jose.mercado@email.com', 'BSBA', 3, '$2y$10$nq0sQxqEG5jiccFEIZpFMu/Ep/NgojGKeXK.AbRs4oVjOIw9W7CDe', 'bcrypt', 'student', 1, NULL, '2026-11-12 08:20:00', '2026-11-12 16:09:47'),
 (7, 'Andrea', 'Cruz', 'Bautista', '09191234503', 'andrea.bautista@email.com', 'BEED', 1, '$2y$10$nq0sQxqEG5jiccFEIZpFMu/Ep/NgojGKeXK.AbRs4oVjOIw9W7CDe', 'bcrypt', 'student', 1, NULL, '2026-11-12 08:20:00', '2026-11-12 16:09:50'),
 (8, 'Mark', 'Villanueva', 'Aquino', '09201234504', 'mark.aquino@email.com', 'ACT', 2, '$2y$10$nq0sQxqEG5jiccFEIZpFMu/Ep/NgojGKeXK.AbRs4oVjOIw9W7CDe', 'bcrypt', 'student', 1, NULL, '2026-11-12 08:20:00', '2026-11-12 16:09:52'),
@@ -153,7 +154,11 @@ CREATE TABLE `waitlist` (
 --
 
 INSERT INTO `waitlist` (`waitlist_id`, `book_id`, `user_id`, `joined_at`, `fulfilled_at`, `cancelled_at`) VALUES
-(2, 7, 3, '2026-11-12 15:32:07', NULL, NULL);
+(2, 7, 3, '2026-11-12 15:32:07', NULL, '2026-11-13 13:53:56'),
+(3, 4, 3, '2026-11-13 14:02:26', NULL, NULL),
+(4, 7, 3, '2026-11-13 14:02:30', NULL, NULL),
+(5, 10, 5, '2026-11-13 14:25:35', NULL, NULL),
+(6, 7, 5, '2026-11-13 14:25:38', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -207,7 +212,7 @@ ALTER TABLE `books`
 -- AUTO_INCREMENT for table `loans`
 --
 ALTER TABLE `loans`
-  MODIFY `loan_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `loan_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -219,7 +224,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `waitlist`
 --
 ALTER TABLE `waitlist`
-  MODIFY `waitlist_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `waitlist_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables

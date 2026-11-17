@@ -1,5 +1,5 @@
 window.TLCLibrary = (function () {
-    const LIBRARY_API_URL = 'library_controller.php';   
+    const LIBRARY_API_URL = new URL('library_controller.php', window.location.href).toString();
 
     const COVER_PLACEHOLDER = 'data:image/svg+xml;utf8,' + encodeURIComponent(
         '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400">' +
@@ -15,22 +15,39 @@ window.TLCLibrary = (function () {
             cache: 'no-store',
             headers: { 'Content-Type': 'application/json' }
         };
+
         let requestUrl = LIBRARY_API_URL;
         if (httpMethod === 'GET') {
-            requestUrl += '?' + new URLSearchParams(queryOrBody || {});
+            const url = new URL(LIBRARY_API_URL);
+            Object.entries(queryOrBody || {}).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) {
+                    url.searchParams.set(key, String(value));
+                }
+            });
+            requestUrl = url.toString();
         } else {
             requestOptions.body = JSON.stringify(queryOrBody || {});
         }
 
-        const response = await fetch(requestUrl, requestOptions);
+        let response;
+        try {
+            response = await fetch(requestUrl, requestOptions);
+        } catch (networkError) {
+            const apiError = new Error('Could not reach the library server. Please check your connection and try again.');
+            apiError.cause = networkError;
+            throw apiError;
+        }
+
         let result;
         try {
-            result = await response.json();
+            const rawText = await response.text();
+            result = rawText ? JSON.parse(rawText) : {};
         } catch {
             const apiError = new Error('The server returned an invalid response (HTTP ' + response.status + ').');
             apiError.httpStatus = response.status;
             throw apiError;
         }
+
         if (!result.ok) {
             const errors = Array.isArray(result.errors) ? result.errors : [result.error || 'Unknown error.'];
             const apiError = new Error(errors.join('\n'));

@@ -1,5 +1,5 @@
 (function () {
-    const BOOKS_PER_PAGE = 12;
+    const BOOKS_PER_PAGE = 10;
 
     const booksContainer = document.getElementById('browse_books_container');
     const catalogMessage = document.getElementById('catalog_message');
@@ -22,7 +22,8 @@
             libraryRules = result.rules;
             renderCatalog();
         } catch (error) {
-            catalogMessage.textContent = 'Could not load books: ' + error.message;
+            console.error('Catalog load failed', error);
+            catalogMessage.textContent = 'Could not load books. Please try again.';
         }
     }
 

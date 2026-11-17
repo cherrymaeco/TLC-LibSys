@@ -68,7 +68,13 @@ borrowCloseButton.addEventListener('click', closeBorrowModal);
 cancelBorrowButton.addEventListener('click', closeBorrowModal);
 borrowModal.addEventListener('click', (event) => { if (event.target === borrowModal) closeBorrowModal(); });
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && borrowModal.classList.contains('is_open')) closeBorrowModal();
+    if (!borrowModal.classList.contains('is_open')) return;
+    if (event.key === 'Escape') {
+        closeBorrowModal();
+    } else if (event.key === 'Enter') {
+        event.preventDefault();
+        if (!confirmBorrowButton.disabled) confirmBorrowButton.click();
+    }
 });
 
 borrowForm.addEventListener('submit', async (event) => {

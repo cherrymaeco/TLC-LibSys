@@ -30,7 +30,8 @@
     function getFilteredBooks() {
         const searchText = headerSearchInput ? headerSearchInput.value.trim().toLowerCase() : '';
         return allBooks.filter((book) =>
-            [book.title, book.author, book.category, book.isbn].join(' ').toLowerCase().includes(searchText)
+            [book.title, book.author, book.publication_year, book.category, book.isbn]
+                .join(' ').toLowerCase().includes(searchText)
         );
     }
 

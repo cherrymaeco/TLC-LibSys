@@ -81,6 +81,7 @@ function getVisibleLoans() {
             (filterChoice === 'borrowed' && loanStatus === 'borrowed') ||
             (filterChoice === 'overdue'  && loanStatus === 'overdue') ||
             (filterChoice === 'returned' && loanStatus === 'returned') ||
+            (filterChoice === 'lost' && loanStatus === 'lost') ||
             (filterChoice === 'expired-cancelled' && (loanStatus === 'expired' || loanStatus === 'cancelled'));
 
         const searchableText = [loan.borrower_name, loan.borrower_email, loan.book_title, loan.isbn]

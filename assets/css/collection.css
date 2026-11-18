@@ -31,20 +31,29 @@ tbody tr:hover { background: #f1e2d3; }
 .modal_overlay { display: none; position: fixed; inset: 0; z-index: 30; padding: 2rem;
     background: rgba(22, 16, 10, .82); align-items: center; justify-content: center; }
 .modal_overlay.is_open { display: flex; }
-.modal_box { width: min(100%, 480px); background: #FDF2E9; border-radius: 12px; padding: 1.5rem; }
+.modal_box { width: min(100%, 480px); background: #FDF2E9; border-radius: 12px; padding: 1.5rem 2.5rem; }
 .modal_top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .modal_x { background: none; border: 0; font-size: 1.8rem; cursor: pointer; color: #3E2C1B; }
 #book_form { display: flex; flex-direction: column; gap: .75rem; }
 .cover_image_help { color: #7D6B5A; font-size: .8rem; }
-.form_errors { color: #a12d1a; font-size: .85rem; white-space: pre-line; }
+.form_errors {
+    display: none; position: fixed; top: 1.25rem; left: 50%; z-index: 100;
+    transform: translateX(-50%); max-width: calc(100vw - 2rem); padding: .9rem 1.4rem;
+    border-radius: 10px; background: #8b2f24; color: #fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .2); font-size: .9rem; white-space: pre-line;
+}
+.form_errors:not(:empty) { display: block; }
 .modal_footer { display: flex; justify-content: flex-end; gap: .75rem; }
 
-.modal_box.modal_wide { width: min(100%, 880px); max-height: 92vh; overflow: auto; }
+.modal_box.modal_wide {
+    display: flex; flex-direction: column; width: min(100%, 880px);
+    height: 92vh; max-height: 92vh; box-sizing: border-box; overflow: auto;
+}
 .modal_box.modal_medium { width: min(100%, 640px); max-height: 92vh; overflow: auto; }
-.modal_columns { display: grid; grid-template-columns: 1fr 260px; gap: 1.25rem; }
-.modal_fields { display: flex; flex-direction: column; gap: .75rem; min-width: 0; }
+.modal_columns { display: grid; grid-template-columns: 1fr 260px; gap: 1.25rem; flex: 1; min-height: 0; }
+.modal_fields { display: flex; flex-direction: column; gap: .75rem; min-width: 0; min-height: 0; }
 .modal_fields textarea { padding: .55rem .8rem; border: 1px solid #7D6B5A; border-radius: 8px;
-    background: #fff; font: inherit; color: #1E130A; resize: none; }
+    background: #fff; font: inherit; color: #1E130A; resize: none; flex: 1; min-height: 8rem; }
 .cover_preview_column { display: flex; flex-direction: column; gap: .5rem; }
 .cover_preview_frame { aspect-ratio: 3 / 4; display: flex; align-items: center; justify-content: center;
     background: #3E2C1B; color: #d9c8b8; border-radius: 10px; border: 1px solid #7D6B5A; overflow: hidden; }

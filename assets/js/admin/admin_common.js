@@ -33,6 +33,9 @@
     logoutButton.className = 'admin_logout_btn';
     logoutButton.textContent = 'Log out';
     logoutForm.appendChild(logoutButton);
+    logoutForm.addEventListener('submit', (event) => {
+        if (!window.confirm('Are you sure you want to log out?')) event.preventDefault();
+    });
     sessionElement.append(nameElement, logoutForm);
     headerElement.appendChild(sessionElement);
 

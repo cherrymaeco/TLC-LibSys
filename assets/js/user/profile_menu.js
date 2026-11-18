@@ -78,6 +78,9 @@
         logoutButton.setAttribute('role', 'menuitem');
         logoutButton.textContent = 'Log out';
         logoutForm.appendChild(logoutButton);
+        logoutForm.addEventListener('submit', (event) => {
+            if (!window.confirm('Are you sure you want to log out?')) event.preventDefault();
+        });
 
         menuElement.append(infoElement, logoutForm);
     }

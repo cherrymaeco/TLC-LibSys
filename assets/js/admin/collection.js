@@ -18,9 +18,12 @@ const cancelFormButton   = document.getElementById('cancel_book_form');
 const closeFormButton    = document.getElementById('close_book_form');
 const saveFormButton     = document.getElementById('save_book_button');
 const coverFileInput     = document.getElementById('cover_image');
+const removeCoverButton  = document.getElementById('remove_cover_button');
+const removeCoverInput   = bookFormElement.elements.remove_cover_image;
 const coverPreviewImage  = document.getElementById('cover_preview_image');
 const coverPreviewHolder = document.getElementById('cover_preview_placeholder');
 const coverPreviewCaption = document.getElementById('cover_preview_caption');
+const authorInput = bookFormElement.elements.author;
 
 const waitlistModal      = document.getElementById('waitlist_modal');
 const waitlistTitle      = document.getElementById('waitlist_modal_title');
@@ -31,6 +34,20 @@ const closeWaitlistButton = document.getElementById('close_waitlist_modal');
 let allBooks = [];                 // latest list from the server
 let existingCoverUrl = '';         // cover of the book being edited (if any)
 let pendingPreviewUrl = '';        // object URL of a newly chosen file (revoked when replaced)
+
+function filterAuthorInput() {
+    const cursorPosition = authorInput.selectionStart;
+    const value = authorInput.value;
+    const lettersAndSpaces = value.replace(/[^\p{L} ]/gu, '');
+
+    if (value !== lettersAndSpaces) {
+        const cursorValue = value.slice(0, cursorPosition).replace(/[^\p{L} ]/gu, '');
+        authorInput.value = lettersAndSpaces;
+        authorInput.setSelectionRange(cursorValue.length, cursorValue.length);
+    }
+}
+
+authorInput.addEventListener('input', filterAuthorInput);
 
 const isArchiveView = () => archiveViewSelect.value === 'archived';
 const coverUrlFor = (coverPath) => (coverPath ? '../' + coverPath : '');   // pages live one folder deep
@@ -172,15 +189,44 @@ function clearPendingPreview() {
     }
 }
 
+function updateRemoveCoverButton() {
+    const hasCover = !!existingCoverUrl || coverFileInput.files.length > 0;
+    removeCoverButton.hidden = !hasCover;
+    removeCoverButton.textContent = existingCoverUrl && removeCoverInput.value === '1'
+        ? 'Undo cover removal'
+        : 'Remove cover';
+}
+
+removeCoverButton.addEventListener('click', () => {
+    if (coverFileInput.files.length > 0) {
+        coverFileInput.value = '';
+        clearPendingPreview();
+        removeCoverInput.value = '0';
+        showCoverPreview(existingCoverUrl, existingCoverUrl ? 'Current cover' : '');
+    } else if (existingCoverUrl && removeCoverInput.value === '1') {
+        removeCoverInput.value = '0';
+        showCoverPreview(existingCoverUrl, 'Current cover');
+    } else if (existingCoverUrl) {
+        removeCoverInput.value = '1';
+        showCoverPreview('', 'Cover will be removed when saved');
+    }
+    updateRemoveCoverButton();
+});
+
 coverFileInput.addEventListener('change', () => {
     clearPendingPreview();
     const chosenFile = coverFileInput.files[0];
     if (chosenFile) {
+        removeCoverInput.value = '0';
         pendingPreviewUrl = URL.createObjectURL(chosenFile);
         showCoverPreview(pendingPreviewUrl, 'New cover (not saved yet)');
     } else {
-        showCoverPreview(existingCoverUrl, existingCoverUrl ? 'Current cover' : '');
+        showCoverPreview(
+            removeCoverInput.value === '1' ? '' : existingCoverUrl,
+            removeCoverInput.value === '1' ? 'Cover will be removed when saved' : (existingCoverUrl ? 'Current cover' : '')
+        );
     }
+    updateRemoveCoverButton();
 });
 
 function openBookForm(bookToEdit) {
@@ -196,6 +242,7 @@ function openBookForm(bookToEdit) {
         formFields.book_id.value          = bookToEdit.book_id;
         formFields.title.value            = bookToEdit.title;
         formFields.author.value           = bookToEdit.author;
+        filterAuthorInput();
         formFields.isbn.value             = bookToEdit.isbn || '';
         formFields.publication_year.value = bookToEdit.publication_year;
         formFields.category.value         = bookToEdit.category;
@@ -212,6 +259,7 @@ function openBookForm(bookToEdit) {
         bookFormElement.elements.copies_total.value = 1;
         showCoverPreview('', '');
     }
+    updateRemoveCoverButton();
     bookModalElement.classList.add('is_open');
     bookFormElement.elements.title.focus();
 }

@@ -41,7 +41,7 @@ if (isset($_SESSION['first_name']) && is_string($_SESSION['first_name'])) {
         <div class="header_tools">
             <label class="search_box" aria-label="Search books">
                 <span class="search_icon">⌕</span>
-                <input type="search" placeholder="Search books...">
+                <input type="search" placeholder="Search title, author, year, category, ISBN...">
             </label>
 
             <button type="button" class="profile_btn" aria-label="Profile">

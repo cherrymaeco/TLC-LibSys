@@ -107,11 +107,13 @@
 
                         <label for="cover_image">Cover image (optional)</label>
                         <input type="file" id="cover_image" name="cover_image" accept="image/jpeg,image/png,image/webp">
-                        <small class="cover_image_help">JPG, PNG, or WebP up to 5 MB. Leave empty when editing to keep the current cover.</small>
+                        <input type="hidden" name="remove_cover_image" value="0">
+                        <button type="button" id="remove_cover_button" class="secondary_btn" hidden>Remove cover</button>
+                        <small class="cover_image_help">JPG, PNG, or WebP up to 5 MB. Leave empty to keep the current cover, or use Remove cover to clear it.</small>
                     </aside>
                 </div>
 
-                <p id="book_form_errors" class="form_errors"></p>
+                <p id="book_form_errors" class="form_errors" role="alert" aria-live="assertive"></p>
 
                 <div class="modal_footer">
                     <button type="button" id="cancel_book_form" class="secondary_btn">Cancel</button>

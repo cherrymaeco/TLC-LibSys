@@ -23,11 +23,11 @@ function readRequestBody(): array
     return is_array($decodedBody) ? $decodedBody : [];
 }
 
-function saveCoverImage(?string $currentImage): ?string
+function saveCoverImage(?string $currentImage, bool $removeCurrent = false): ?string
 {
     $image = $_FILES['cover_image'] ?? null;
     if ($image === null || $image['error'] === UPLOAD_ERR_NO_FILE) {
-        return $currentImage;
+        return $removeCurrent ? null : $currentImage;
     }
     if ($image['error'] !== UPLOAD_ERR_OK) {
         sendJson(['ok' => false, 'errors' => ['The cover image could not be uploaded.']], 400);
@@ -114,6 +114,9 @@ function validateBookInput(array $rawInput): array
 
     if ($title === '')  { $errors[] = 'Title is required.'; }
     if ($author === '') { $errors[] = 'Author is required.'; }
+    elseif (preg_match('/^\p{L}+(?: +\p{L}+)*$/u', $author) !== 1) {
+        $errors[] = 'Author may contain letters and spaces only.';
+    }
     if ($year === false || $year < 1000 || $year > $currentYear) {
         $errors[] = "Year must be a 4-digit year up to $currentYear.";
     }
@@ -259,7 +262,8 @@ try {
         $existingImageQuery = $pdo->prepare('SELECT cover_image FROM books WHERE book_id = ?');
         $existingImageQuery->execute([$bookId]);
         $oldCoverImage = $existingImageQuery->fetchColumn() ?: null;
-        $updatedBook['cover_image'] = saveCoverImage($oldCoverImage);
+        $removeCurrentCover = ($requestBody['remove_cover_image'] ?? '') === '1';
+        $updatedBook['cover_image'] = saveCoverImage($oldCoverImage, $removeCurrentCover);
         $updatedBook['book_id'] = $bookId;
         try {
             $updateStatement = $pdo->prepare(

@@ -3,6 +3,8 @@ session_start();
 require 'config/db.php';
 require 'includes/auth.php';
 
+$signupError = null;
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $first  = $_POST['first_name'] ?? '';
     $middle = $_POST['middle_name'] ?? '';
@@ -31,6 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // basic validation
     if ($first === '' || $last === '')                    
         die('First and last name are required');
+    if (
+        preg_match('/^\p{L}+(?: +\p{L}+)*$/u', $first) !== 1
+        || ($middle !== '' && preg_match('/^\p{L}+(?: +\p{L}+)*$/u', $middle) !== 1)
+        || preg_match('/^\p{L}+(?: +\p{L}+)*$/u', $last) !== 1
+    ) {
+        die('Names may contain letters and spaces only.');
+    }
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) 
         die('Invalid email');
     if (!preg_match('/^[0-9]{11}$/', $phone))        
@@ -54,14 +63,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $stmt->execute([$first, $middle ?: null, $last, $phone, $email,
                         $course, $year, $hash]);
+        session_regenerate_id(true);
+        $_SESSION['user_id'] = (int) $pdo->lastInsertId();
+        $_SESSION['first_name'] = $first;
+        $_SESSION['role'] = 'student';
         header('Location: user/main.php');
         exit;
     } catch (PDOException $e) {
-        // 23000 = duplicate email/phone
         if ($e->getCode() === '23000') {
-            die('Email or phone number already registered.');
+            $databaseMessage = $e->errorInfo[2] ?? '';
+            if (strpos($databaseMessage, 'uq_users_email') !== false) {
+                $signupError = 'This email is already registered.';
+            } elseif (strpos($databaseMessage, 'uq_users_phone') !== false) {
+                $signupError = 'This phone number is already registered.';
+            } else {
+                $signupError = 'This email or phone number is already registered.';
+            }
+        } else {
+            throw $e;
         }
-        throw $e;
     }
 }
 ?>
@@ -81,6 +101,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </head>
     <body>
+        <?php if ($signupError !== null): ?>
+            <div class="toast toast--error" id="signup-error" role="alert">
+                <?= htmlspecialchars($signupError, ENT_QUOTES, 'UTF-8') ?>
+            </div>
+        <?php endif; ?>
+
         <div id="page">
             <div class="inactive_section" id="login_section">
                 <img id="logo" src="assets/imgs/logo.png" alt="">
@@ -129,10 +155,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <script>
+            const nameInputs = ['first_name', 'middle_name', 'last_name']
+                .map((id) => document.getElementById(id));
+
+            function capitalizeName(value) {
+                return value.toLowerCase().replace(
+                    /(^| )(\p{L})/gu,
+                    (_, separator, letter) => separator + letter.toUpperCase()
+                );
+            }
+
+            nameInputs.forEach((input) => {
+                input.addEventListener('input', (event) => {
+                    if (event.isComposing) return;
+
+                    const start = input.selectionStart;
+                    const end = input.selectionEnd;
+                    const value = input.value;
+                    const capitalized = capitalizeName(value);
+
+                    if (value !== capitalized) {
+                        input.value = capitalized;
+                        input.setSelectionRange(
+                            capitalizeName(value.slice(0, start)).length,
+                            capitalizeName(value.slice(0, end)).length
+                        );
+                    }
+                });
+            });
+
             document.querySelector('form').addEventListener('submit', function (e) {
+                const names = [
+                    document.getElementById('first_name').value,
+                    document.getElementById('middle_name').value,
+                    document.getElementById('last_name').value
+                ];
                 const pass = document.getElementById('password').value;
                 const phone = document.getElementById('phone_number').value;
 
+                if (names.some((name) => name.trim() && !/^\p{L}+(?: +\p{L}+)*$/u.test(name.trim()))) {
+                    e.preventDefault();
+                    alert('Names may contain letters and spaces only.');
+                    return;
+                }
                 if (pass.length < 8) {
                     e.preventDefault();
                     alert('Password must be at least 8 characters.');
@@ -143,6 +208,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     alert('Phone number must be exactly 11 digits.');
                 }
             });
+
+            const signupError = document.getElementById('signup-error');
+            if (signupError) {
+                window.setTimeout(() => {
+                    signupError.classList.add('toast--hidden');
+                    window.setTimeout(() => signupError.remove(), 300);
+                }, 4000);
+            }
         </script>
     </body>
 </html>
